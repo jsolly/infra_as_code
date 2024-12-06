@@ -6,10 +6,10 @@ resource "aws_s3_bucket" "website_bucket" {
 resource "aws_s3_bucket_public_access_block" "website_bucket" {
   bucket = aws_s3_bucket.website_bucket.id
 
-  block_public_acls       = false
-  block_public_policy     = false
-  ignore_public_acls      = false
-  restrict_public_buckets = false
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
 resource "aws_s3_bucket_policy" "website_policy" {
@@ -35,20 +35,6 @@ resource "aws_s3_bucket_policy" "website_policy" {
           }
         }
       },
-      {
-        Sid       = "AllowPublicReadAccessToCertainStaticFiles"
-        Effect    = "Allow"
-        Principal = "*"
-        Action    = "s3:GetObject"
-        Resource = [
-          "arn:aws:s3:::${var.bucket_name}/sitemap-index.xml",
-          "arn:aws:s3:::${var.bucket_name}/sitemap-0.xml",
-          "arn:aws:s3:::${var.bucket_name}/robots.txt",
-          "arn:aws:s3:::${var.bucket_name}/favicon.ico",
-          "arn:aws:s3:::${var.bucket_name}/favicons/*",
-          "arn:aws:s3:::${var.bucket_name}/404.html"
-        ]
-      }
     ]
   })
 }
