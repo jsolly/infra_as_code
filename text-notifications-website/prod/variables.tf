@@ -1,8 +1,3 @@
-variable "certificate_arn" {
-  description = "ARN of the manually created ACM certificate"
-  type        = string
-}
-
 variable "domain_name" {
   description = "Primary domain name (e.g., example.com)"
   type        = string
@@ -18,6 +13,11 @@ variable "aws_account_id" {
   type        = string
 }
 
+variable "google_search_console_txt_record" {
+  description = "The Google Search Console TXT record"
+  type        = string
+}
+
 variable "cloudflare_api_token" {
   type        = string
   description = "Cloudflare API token"
@@ -25,6 +25,6 @@ variable "cloudflare_api_token" {
 }
 
 variable "cloudflare_zone_id" {
+  description = "The zone ID for the Cloudflare domain"
   type        = string
-  description = "Cloudflare Zone ID for the domain"
 }

@@ -16,7 +16,7 @@ terraform {
     }
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "~> 4.0"
+      version = "5.0.0-alpha1"
     }
   }
 }
@@ -30,30 +30,21 @@ provider "cloudflare" {
   api_token = var.cloudflare_api_token
 }
 
-module "acm" {
-  source      = "../../modules/acm"
-  domain_name = var.domain_name
-  zone_id     = var.cloudflare_zone_id
+module "cloudflare" {
+  source = "../../modules/cloudflare"
+  
+  cloudflare_zone_id   = var.cloudflare_zone_id
+  domain_name          = var.domain_name
+  s3_website_endpoint  = "${var.bucket_name}.s3-website-${data.aws_region.current.name}.amazonaws.com"
+  google_search_console_txt_record = var.google_search_console_txt_record
+  cloudflare_api_token = var.cloudflare_api_token
 }
 
-module "cloudfront" {
-  source             = "../../modules/cloudfront"
-  bucket_domain_name = module.s3.bucket_domain_name
-  bucket_id          = module.s3.bucket_id
-  certificate_arn    = module.acm.certificate_arn
-  domain_names       = [var.domain_name, "www.${var.domain_name}"]
-}
+// Add this data source to get the current region
+data "aws_region" "current" {}
 
 module "s3" {
   source                      = "../../modules/s3"
   bucket_name                 = var.bucket_name
-  cloudfront_distribution_arn = module.cloudfront.distribution_arn
-}
-
-module "route53" {
-  source                    = "../../modules/route53"
-  domain_name               = var.domain_name
-  cloudfront_domain_name    = module.cloudfront.domain_name
-  bucket_name               = var.bucket_name
-  cloudfront_hosted_zone_id = module.cloudfront.hosted_zone_id
+  bucket_policy_type          = "cloudflare"
 }
