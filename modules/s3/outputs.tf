@@ -5,3 +5,18 @@ output "bucket_domain_name" {
 output "bucket_id" {
   value = aws_s3_bucket.website_bucket.id
 }
+
+output "bucket_policy" {
+  description = "The bucket policy document"
+  value       = module.bucket_policy.bucket_policy
+}
+
+output "bucket_name" {
+  description = "Name of the created S3 bucket"
+  value       = aws_s3_bucket.website_bucket.id
+}
+
+output "bucket_arn" {
+  description = "ARN of the created S3 bucket"
+  value       = aws_s3_bucket.website_bucket.arn
+}

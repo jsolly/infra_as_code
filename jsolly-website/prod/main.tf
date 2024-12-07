@@ -33,8 +33,10 @@ module "cloudfront" {
 module "s3" {
   source                      = "../../modules/s3"
   bucket_name                 = var.bucket_name
+  bucket_policy_type          = "cloudfront"
   cloudfront_distribution_arn = module.cloudfront.distribution_arn
 }
+
 module "route53" {
   source                    = "../../modules/route53"
   domain_name               = var.domain_name

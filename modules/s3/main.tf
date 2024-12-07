@@ -12,29 +12,15 @@ resource "aws_s3_bucket_public_access_block" "website_bucket" {
   restrict_public_buckets = true
 }
 
+module "bucket_policy" {
+  source = "./bucket-policies"
+  
+  bucket_name                 = aws_s3_bucket.website_bucket.id
+  policy_type                 = var.bucket_policy_type
+  cloudfront_distribution_arn = try(var.cloudfront_distribution_arn, null)
+}
+
 resource "aws_s3_bucket_policy" "website_policy" {
   bucket = aws_s3_bucket.website_bucket.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Sid    = "AllowCloudFrontServicePrincipalReadAccess"
-        Effect = "Allow"
-        Principal = {
-          Service = "cloudfront.amazonaws.com"
-        }
-        Action = ["s3:GetObject", "s3:ListBucket"]
-        Resource = [
-          "arn:aws:s3:::${var.bucket_name}",
-          "arn:aws:s3:::${var.bucket_name}/*"
-        ]
-        Condition = {
-          StringEquals = {
-            "AWS:SourceArn" = var.cloudfront_distribution_arn
-          }
-        }
-      },
-    ]
-  })
+  policy = module.bucket_policy.bucket_policy
 }
