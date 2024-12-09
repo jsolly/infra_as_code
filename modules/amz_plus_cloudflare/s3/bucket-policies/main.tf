@@ -3,31 +3,6 @@ locals {
   policy = var.policy_type == "cloudfront" ? data.aws_iam_policy_document.cloudfront[0].json : data.aws_iam_policy_document.cloudflare[0].json
 }
 
-# CloudFront policy
-data "aws_iam_policy_document" "cloudfront" {
-  count = var.policy_type == "cloudfront" ? 1 : 0
-
-  statement {
-    sid = "AllowCloudFrontAccess"
-    effect = "Allow"
-    principals {
-      type        = "Service"
-      identifiers = ["cloudfront.amazonaws.com"]
-    }
-    actions   = ["s3:GetObject", "s3:ListBucket"]
-    resources = [
-      "arn:aws:s3:::${var.bucket_name}",
-      "arn:aws:s3:::${var.bucket_name}/*"
-    ]
-
-    condition {
-      test     = "StringEquals"
-      variable = "AWS:SourceArn"
-      values   = [var.cloudfront_distribution_arn]
-    }
-  }
-}
-
 # Cloudflare policy
 data "aws_iam_policy_document" "cloudflare" {
   count = var.policy_type == "cloudflare" ? 1 : 0
