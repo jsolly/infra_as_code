@@ -8,7 +8,7 @@ output "bucket_id" {
 
 output "bucket_policy" {
   description = "The bucket policy document"
-  value       = module.bucket_policy.bucket_policy
+  value       = aws_s3_bucket_policy.www_bucket_policy
 }
 
 output "bucket_name" {

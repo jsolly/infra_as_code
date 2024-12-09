@@ -10,7 +10,7 @@ terraform {
 resource "cloudflare_dns_record" "website" {
   zone_id = var.cloudflare_zone_id
   name    = "@"
-  content   = "${var.bucket_name}.s3-website-${var.aws_region}.amazonaws.com"  # S3 website endpoint
+  content   = "${var.bucket_name}.s3-website-${var.aws_region}.amazonaws.com"
   type    = "CNAME"
   proxied = true
   ttl     = 1
@@ -19,7 +19,7 @@ resource "cloudflare_dns_record" "website" {
 resource "cloudflare_dns_record" "www" {
   zone_id = var.cloudflare_zone_id
   name    = "www"
-  content = var.domain_name
+  content = "www.${var.bucket_name}.s3-website-${var.aws_region}.amazonaws.com"
   type    = "CNAME"
   proxied = true
   ttl     = 1
@@ -33,3 +33,19 @@ resource "cloudflare_dns_record" "google_search_console" {
   type    = "TXT"
   ttl     = 1
 }
+
+# resource "cloudflare_worker_script" "append_index" {
+#   name    = "${var.domain_name}-append-index"
+#   content = file("${path.module}/functions/append-index.js")
+
+#   plain_text_binding {
+#     name = "ENVIRONMENT"
+#     text = var.environment
+#   }
+# }
+
+# resource "cloudflare_worker_route" "append_index_route" {
+#   zone_id     = var.zone_id
+#   pattern     = "/*"
+#   script_name = cloudflare_worker_script.append_index.name
+# }
