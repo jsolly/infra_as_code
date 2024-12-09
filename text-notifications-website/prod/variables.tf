@@ -13,6 +13,12 @@ variable "aws_account_id" {
   type        = string
 }
 
+variable "aws_region" {
+  description = "AWS Region"
+  type        = string
+  default     = "us-east-1"
+}
+
 variable "google_search_console_txt_record" {
   description = "The Google Search Console TXT record"
   type        = string
