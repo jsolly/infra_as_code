@@ -8,11 +8,6 @@ variable "bucket_name" {
   type        = string
 }
 
-variable "aws_account_id" {
-  description = "AWS Account ID for the General Account"
-  type        = string
-}
-
 variable "aws_region" {
   description = "AWS Region"
   type        = string
@@ -32,10 +27,5 @@ variable "cloudflare_api_token" {
 
 variable "cloudflare_zone_id" {
   description = "The zone ID for the Cloudflare domain"
-  type        = string
-}
-
-variable "cloudflare_account_id" {
-  description = "The account ID for your Cloudflare account"
   type        = string
 }

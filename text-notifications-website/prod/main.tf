@@ -32,7 +32,6 @@ provider "cloudflare" {
 
 module "cloudflare" {
   source = "../../modules/aws_plus_cloudflare/cloudflare"
-  cloudflare_account_id = var.cloudflare_account_id
   cloudflare_zone_id    = var.cloudflare_zone_id
   domain_name           = var.domain_name
   bucket_name           = var.bucket_name

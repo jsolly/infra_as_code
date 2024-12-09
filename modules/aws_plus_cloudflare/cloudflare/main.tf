@@ -33,19 +33,3 @@ resource "cloudflare_dns_record" "google_search_console" {
   type    = "TXT"
   ttl     = 1
 }
-
-# resource "cloudflare_worker_script" "append_index" {
-#   name    = "${var.domain_name}-append-index"
-#   content = file("${path.module}/functions/append-index.js")
-
-#   plain_text_binding {
-#     name = "ENVIRONMENT"
-#     text = var.environment
-#   }
-# }
-
-# resource "cloudflare_worker_route" "append_index_route" {
-#   zone_id     = var.zone_id
-#   pattern     = "/*"
-#   script_name = cloudflare_worker_script.append_index.name
-# }
