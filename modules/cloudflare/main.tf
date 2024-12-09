@@ -7,19 +7,19 @@ terraform {
   }
 }
 
-# CNAME record for the apex domain pointing to S3 website endpoint
 resource "cloudflare_dns_record" "website" {
   zone_id = var.cloudflare_zone_id
   name    = "@"
+  content   = "${var.bucket_name}.s3-website-${var.aws_region}.amazonaws.com"  # S3 website endpoint
   type    = "CNAME"
   proxied = true
   ttl     = 1
 }
 
-# WWW subdomain that points to the apex domain
 resource "cloudflare_dns_record" "www" {
   zone_id = var.cloudflare_zone_id
-  name    = "www.${var.domain_name}"
+  name    = "www"
+  content = var.domain_name
   type    = "CNAME"
   proxied = true
   ttl     = 1
@@ -29,6 +29,7 @@ resource "cloudflare_dns_record" "www" {
 resource "cloudflare_dns_record" "google_search_console" {
   zone_id = var.cloudflare_zone_id
   name    = var.domain_name
+  content = var.google_search_console_txt_record
   type    = "TXT"
   ttl     = 1
 }

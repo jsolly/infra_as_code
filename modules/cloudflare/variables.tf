@@ -1,24 +1,24 @@
 variable "cloudflare_zone_id" {
-  description = "The zone ID for the Cloudflare domain"
+  description = "The zone ID for your Cloudflare domain"
   type        = string
 }
 
 variable "domain_name" {
-  description = "The domain name for the website (e.g., example.com)"
+  description = "The domain name (e.g., textnotifications.app)"
   type        = string
 }
 
-variable "s3_website_endpoint" {
-  description = "The S3 bucket website endpoint"
+variable "bucket_name" {
+  description = "The name of the S3 bucket"
+  type        = string
+}
+
+variable "aws_region" {
+  description = "The AWS region where the S3 bucket is located"
   type        = string
 }
 
 variable "google_search_console_txt_record" {
-  description = "TXT record value for Google Search Console verification"
-  type        = string
-}
-
-variable "cloudflare_api_token" {
-  description = "The API token for the Cloudflare account"
+  description = "The TXT record value for Google Search Console verification"
   type        = string
 }
