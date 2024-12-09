@@ -10,7 +10,7 @@ terraform {
 resource "cloudflare_dns_record" "website" {
   zone_id = var.cloudflare_zone_id
   name    = "@"
-  content   = "${var.bucket_name}.s3-website-${var.aws_region}.amazonaws.com"  # S3 website endpoint
+  content   = "${var.bucket_name}.s3-website-${var.aws_region}.amazonaws.com"
   type    = "CNAME"
   proxied = true
   ttl     = 1
@@ -19,7 +19,7 @@ resource "cloudflare_dns_record" "website" {
 resource "cloudflare_dns_record" "www" {
   zone_id = var.cloudflare_zone_id
   name    = "www"
-  content = var.domain_name
+  content = "www.${var.bucket_name}.s3-website-${var.aws_region}.amazonaws.com"
   type    = "CNAME"
   proxied = true
   ttl     = 1

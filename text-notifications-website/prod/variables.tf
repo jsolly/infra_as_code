@@ -8,11 +8,6 @@ variable "bucket_name" {
   type        = string
 }
 
-variable "aws_account_id" {
-  description = "AWS Account ID for the General Account"
-  type        = string
-}
-
 variable "aws_region" {
   description = "AWS Region"
   type        = string

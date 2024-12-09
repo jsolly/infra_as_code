@@ -2,7 +2,6 @@ variable "cloudflare_zone_id" {
   description = "The zone ID for your Cloudflare domain"
   type        = string
 }
-
 variable "domain_name" {
   description = "The domain name (e.g., textnotifications.app)"
   type        = string
