@@ -12,8 +12,3 @@ variable "bucket_name" {
   description = "Name of the S3 bucket to create"
   type        = string
 }
-
-variable "aws_account_id" {
-  description = "AWS Account ID for the General Account"
-  type        = string
-}
