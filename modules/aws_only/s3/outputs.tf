@@ -3,7 +3,8 @@ output "bucket_domain_name" {
 }
 
 output "bucket_id" {
-  value = aws_s3_bucket.website_bucket.id
+  description = "Name of the S3 bucket (same as bucket ID)"
+  value = aws_s3_bucket.website_bucket.bucket
 }
 
 output "bucket_policy" {
