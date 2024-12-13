@@ -54,7 +54,6 @@ This pattern is suitable for users who prefer Cloudflare's CDN features, DDoS pr
    - `certificate_arn` - ACM certificate ARN
    - `domain_name` - Your domain name
    - `bucket_name` - S3 bucket name
-   - `aws_account_id` - AWS account ID
 
    For AWS+Cloudflare pattern:
    - `cloudflare_api_token` - Cloudflare API token

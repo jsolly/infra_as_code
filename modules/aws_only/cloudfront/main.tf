@@ -6,10 +6,10 @@ resource "aws_cloudfront_origin_access_control" "oac" {
   signing_protocol                  = "sigv4"
 }
 
-resource "aws_cloudfront_function" "append_index_to_directories" {
-  name    = "AppendIndexToDirectories"
+resource "aws_cloudfront_function" "append_index_to_directories_new" {
+  name    = "AppendIndexToDirectories-${var.bucket_id}"
   runtime = "cloudfront-js-2.0"
-  comment = "Appends /index.html to directories"
+  comment = "Appends /index.html to directories for ${var.bucket_id}"
   code    = file("${path.module}/functions/append-index.js")
 }
 
@@ -47,7 +47,7 @@ resource "aws_cloudfront_distribution" "distribution" {
 
     function_association {
       event_type   = "viewer-request"
-      function_arn = aws_cloudfront_function.append_index_to_directories.arn
+      function_arn = aws_cloudfront_function.append_index_to_directories_new.arn
     }
   }
 

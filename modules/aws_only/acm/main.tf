@@ -7,7 +7,7 @@ terraform {
   }
 }
 
-resource "aws_route53_zone" "zone" {
+data "aws_route53_zone" "zone" {
   name = var.domain_name
 }
 
