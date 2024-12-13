@@ -13,6 +13,7 @@ resource "aws_cloudfront_function" "append_index_to_directories" {
   code    = file("${path.module}/functions/append-index.js")
 }
 
+
 resource "aws_cloudfront_distribution" "distribution" {
   origin {
     domain_name              = var.bucket_domain_name
