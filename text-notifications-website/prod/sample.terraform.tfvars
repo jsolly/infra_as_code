@@ -1,0 +1,6 @@
+domain_name     = "example.com"
+bucket_name     = "example-bucket"
+aws_region      = "us-east-1"
+google_search_console_txt_record = "\"google-site-verification=<verification_code>\""
+cloudflare_api_token = "<cloudflare_api_token>"
+cloudflare_zone_id   = "<cloudflare_zone_id>"
