@@ -29,3 +29,15 @@ variable "cloudflare_zone_id" {
   description = "The zone ID for the Cloudflare domain"
   type        = string
 }
+
+# variable "nasa_bucket_name" {
+#   description = "Name of the S3 bucket for NASA images"
+#   type        = string
+#   default     = "nasa-images-bucket"
+# }
+
+# variable "nasa_table_name" {
+#   description = "Name of the DynamoDB table for NASA image metadata"
+#   type        = string
+#   default     = "NASA_Image_Metadata"
+# }

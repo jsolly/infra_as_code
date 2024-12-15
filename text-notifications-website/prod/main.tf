@@ -31,7 +31,7 @@ provider "cloudflare" {
 }
 
 module "cloudflare" {
-  source = "../../modules/aws_plus_cloudflare/cloudflare"
+  source = "../../modules/static_website/aws_plus_cloudflare/cloudflare"
   cloudflare_zone_id    = var.cloudflare_zone_id
   domain_name           = var.domain_name
   bucket_name           = var.bucket_name
@@ -43,7 +43,7 @@ module "cloudflare" {
 data "aws_region" "current" {}
 
 module "s3" {
-  source                      = "../../modules/aws_plus_cloudflare/s3"
+  source                      = "../../modules/static_website/aws_plus_cloudflare/s3"
   bucket_name                 = var.bucket_name
   bucket_policy_type          = "cloudflare"
   enable_website_hosting      = true
@@ -52,3 +52,9 @@ module "s3" {
     error_document = "500.html"
   }
 }
+
+# module "nasa_infrastructure" {
+#   source     = "../../modules/api/nasa_infrastructure"
+#   bucket_name = "nasa-images-${var.bucket_name}" // This ensures uniqueness
+#   table_name = "NASA_Image_Metadata"
+# }
