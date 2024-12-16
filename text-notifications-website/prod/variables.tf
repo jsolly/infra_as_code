@@ -3,8 +3,8 @@ variable "domain_name" {
   type        = string
 }
 
-variable "bucket_name" {
-  description = "Name of the S3 bucket to create"
+variable "website_bucket_name" {
+  description = "Name of the S3 bucket to create for the static website"
   type        = string
 }
 

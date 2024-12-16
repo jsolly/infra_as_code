@@ -9,7 +9,7 @@ locals {
 
 # Create a bucket for www.domain.com
 resource "aws_s3_bucket" "www_bucket" {
-  bucket        = "www.${var.bucket_name}"
+  bucket        = "www.${var.website_bucket_name}"
   force_destroy = true
 }
 
@@ -59,15 +59,15 @@ resource "aws_s3_bucket_policy" "www_bucket_policy" {
 
 # Create a bucket for domain.com to redirect to www.domain.com
 resource "aws_s3_bucket" "website_bucket" {
-  bucket        = var.bucket_name
+  bucket        = var.website_bucket_name
   force_destroy = true
 }
 
 resource "aws_s3_bucket_website_configuration" "website_bucket" {
-  bucket = var.bucket_name
+  bucket = var.website_bucket_name
 
   redirect_all_requests_to {
-    host_name = "www.${var.bucket_name}"
+    host_name = "www.${var.website_bucket_name}"
     protocol  = "https"
   }
 }

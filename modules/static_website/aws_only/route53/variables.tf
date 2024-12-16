@@ -7,8 +7,8 @@ variable "cloudfront_hosted_zone_id" {
   description = "The CloudFront distribution hosted zone ID"
   type        = string
 }
-variable "bucket_name" {
-  description = "The name of the S3 bucket"
+variable "website_bucket_name" {
+  description = "The name of the S3 bucket for the website"
   type        = string
 }
 

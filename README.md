@@ -53,13 +53,13 @@ This pattern is suitable for users who prefer Cloudflare's CDN features, DDoS pr
    For AWS-only pattern:
    - `certificate_arn` - ACM certificate ARN
    - `domain_name` - Your domain name
-   - `bucket_name` - S3 bucket name
+   - `website_bucket_name` - S3 bucket name for the website (e.g., textnotifications-website)
 
    For AWS+Cloudflare pattern:
    - `cloudflare_api_token` - Cloudflare API token
    - `cloudflare_zone_id` - Cloudflare zone ID
    - `domain_name` - Your domain name
-   - `bucket_name` - S3 bucket name
+   - `website_bucket_name` - S3 bucket name for the website (e.g., textnotifications-website)
    - `google_search_console_txt_record` (optional) - For Google Search Console verification
 
 4. Initialize and apply Terraform:

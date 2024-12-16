@@ -7,8 +7,8 @@ variable "domain_name" {
   type        = string
 }
 
-variable "bucket_name" {
-  description = "The name of the S3 bucket"
+variable "website_bucket_name" {
+  description = "The name of the S3 bucket for the website"
   type        = string
 }
 

@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "website_bucket" {
-  bucket        = var.bucket_name
+  bucket        = var.website_bucket_name
   force_destroy = true
 }
 resource "aws_s3_bucket_public_access_block" "website_bucket" {
@@ -24,8 +24,8 @@ resource "aws_s3_bucket_policy" "website_policy" {
         }
         Action = ["s3:GetObject", "s3:ListBucket"]
         Resource = [
-          "arn:aws:s3:::${var.bucket_name}",
-          "arn:aws:s3:::${var.bucket_name}/*"
+          "arn:aws:s3:::${var.website_bucket_name}",
+          "arn:aws:s3:::${var.website_bucket_name}/*"
         ]
         Condition = {
           StringEquals = {

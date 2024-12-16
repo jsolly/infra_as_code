@@ -31,11 +31,11 @@ provider "cloudflare" {
 }
 
 module "cloudflare" {
-  source = "../../modules/static_website/aws_plus_cloudflare/cloudflare"
-  cloudflare_zone_id    = var.cloudflare_zone_id
-  domain_name           = var.domain_name
-  bucket_name           = var.bucket_name
-  aws_region            = var.aws_region
+  source                           = "../../modules/static_website/aws_plus_cloudflare/cloudflare"
+  cloudflare_zone_id               = var.cloudflare_zone_id
+  domain_name                      = var.domain_name
+  website_bucket_name              = var.website_bucket_name
+  aws_region                       = var.aws_region
   google_search_console_txt_record = var.google_search_console_txt_record
 }
 
@@ -43,18 +43,18 @@ module "cloudflare" {
 data "aws_region" "current" {}
 
 module "s3" {
-  source                      = "../../modules/static_website/aws_plus_cloudflare/s3"
-  bucket_name                 = var.bucket_name
-  bucket_policy_type          = "cloudflare"
-  enable_website_hosting      = true
+  source                 = "../../modules/static_website/aws_plus_cloudflare/s3"
+  website_bucket_name    = var.website_bucket_name
+  bucket_policy_type     = "cloudflare"
+  enable_website_hosting = true
   website_config = {
     index_document = "index.html"
     error_document = "500.html"
   }
 }
 
-# module "nasa_infrastructure" {
-#   source     = "../../modules/api/nasa_infrastructure"
-#   bucket_name = "nasa-images-${var.bucket_name}" // This ensures uniqueness
-#   table_name = "NASA_Image_Metadata"
+# module "api" {
+#   source              = "../../modules/api"
+#   storage_bucket_name = var.storage_bucket_name
+#   metadata_table_name = "NASA_Image_Metadata"
 # }
