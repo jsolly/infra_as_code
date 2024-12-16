@@ -53,8 +53,8 @@ module "s3" {
   }
 }
 
-# module "api" {
-#   source              = "../../modules/api"
-#   storage_bucket_name = var.storage_bucket_name
-#   metadata_table_name = "NASA_Image_Metadata"
-# }
+module "api" {
+  source              = "../../modules/api"
+  storage_bucket_name = var.storage_bucket_name
+  metadata_table_name = var.metadata_table_name
+}

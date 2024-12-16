@@ -1,5 +1,15 @@
 variable "domain_name" {
-  description = "Primary domain name (e.g., example.com)"
+  description = "Base domain name for the application (e.g., example.com)"
+  type        = string
+}
+
+variable "storage_bucket_name" {
+  description = "Name of the S3 bucket for storage"
+  type        = string
+}
+
+variable "metadata_table_name" {
+  description = "Name of the DynamoDB table for metadata"
   type        = string
 }
 
@@ -29,15 +39,3 @@ variable "cloudflare_zone_id" {
   description = "The zone ID for the Cloudflare domain"
   type        = string
 }
-
-# variable "nasa_bucket_name" {
-#   description = "Name of the S3 bucket for NASA images"
-#   type        = string
-#   default     = "nasa-images-bucket"
-# }
-
-# variable "nasa_table_name" {
-#   description = "Name of the DynamoDB table for NASA image metadata"
-#   type        = string
-#   default     = "NASA_Image_Metadata"
-# }
