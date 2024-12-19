@@ -31,7 +31,7 @@ provider "cloudflare" {
 }
 
 module "cloudflare" {
-  source                           = "../../modules/static_website/aws_plus_cloudflare/cloudflare"
+  source                           = "../../../modules/frontend/aws_plus_cloudflare/cloudflare"
   cloudflare_zone_id               = var.cloudflare_zone_id
   domain_name                      = var.domain_name
   website_bucket_name              = var.website_bucket_name
@@ -43,7 +43,7 @@ module "cloudflare" {
 data "aws_region" "current" {}
 
 module "s3" {
-  source                 = "../../modules/static_website/aws_plus_cloudflare/s3"
+  source                 = "../../../modules/frontend/aws_plus_cloudflare/s3"
   website_bucket_name    = var.website_bucket_name
   bucket_policy_type     = "cloudflare"
   enable_website_hosting = true
@@ -51,10 +51,4 @@ module "s3" {
     index_document = "index.html"
     error_document = "500.html"
   }
-}
-
-module "api" {
-  source              = "../../modules/api"
-  storage_bucket_name = var.storage_bucket_name
-  metadata_table_name = var.metadata_table_name
 }

@@ -6,4 +6,10 @@ variable "storage_bucket_name" {
 variable "metadata_table_name" {
   description = "Name of the DynamoDB table for storing metadata"
   type        = string
-} 
+}
+
+variable "nasa_api_key" {
+  description = "API key for NASA's API"
+  type        = string
+  sensitive   = true
+}
