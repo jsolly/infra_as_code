@@ -1,8 +1,0 @@
-domain_name                      = "example.com"
-website_bucket_name              = "example-website"
-metadata_table_name              = "example-metadata"
-storage_bucket_name              = "example-storage"
-aws_region                       = "us-east-1"
-google_search_console_txt_record = "\"google-site-verification=<verification_code>\""
-cloudflare_api_token             = "<cloudflare_api_token>"
-cloudflare_zone_id               = "<cloudflare_zone_id>"

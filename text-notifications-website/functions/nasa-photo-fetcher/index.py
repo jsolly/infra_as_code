@@ -1,7 +1,7 @@
 import os
 import boto3
 import requests
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 
 
 class StorageHelper:
@@ -59,7 +59,7 @@ def handler(event, context):
         image_content = download_image(image_url)
 
         # Generate S3 key
-        date_str = datetime.now().strftime("%Y/%m/%d")
+        date_str = datetime.now(timezone.utc).strftime("%Y/%m/%d")
         filename = f"nasa_apod_{date_str.replace('/', '_')}.jpg"
         s3_key = f"nasa_images/{filename}"
 
@@ -75,7 +75,7 @@ def handler(event, context):
             "original_url": image_url,
             "s3_key": s3_key,
             "media_type": image_data["media_type"],
-            "created_at": datetime.now(UTC).isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
         }
 
         # Save metadata to DynamoDB
