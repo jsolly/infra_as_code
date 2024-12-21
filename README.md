@@ -1,95 +1,100 @@
 # Static Website Infrastructure as Code
 
-This repository contains Terraform configurations for deploying static websites and their backend services using different infrastructure patterns.
+This repository contains Terraform configurations for deploying static websites with serverless backends. It currently supports two websites:
+- Text Notifications Website (textnotifications.app)
+- Personal Website (jsolly.com)
 
-## Frontend Deployment Patterns
+## Infrastructure Patterns
 
-### AWS-Only Infrastructure (`modules/frontend/aws_only`)
-Uses AWS services exclusively for a complete website hosting solution:
-- **Content Storage**: Amazon S3
-- **Content Delivery**: Amazon CloudFront CDN
+### Frontend Options
+
+#### AWS-Only Infrastructure (`modules/frontend/aws_only`)
+Used by jsolly.com, this pattern uses:
+- **Content Storage**: Amazon S3 with private access
+- **Content Delivery**: Amazon CloudFront with Origin Access Control
 - **DNS Management**: Amazon Route53
 - **SSL/TLS**: AWS Certificate Manager
 
-This pattern is ideal for users who want to keep all their infrastructure within AWS and benefit from tight integration between AWS services.
-
-### AWS + Cloudflare Infrastructure (`modules/frontend/aws_plus_cloudflare`)
-Uses AWS for storage while leveraging Cloudflare's CDN and DNS services:
+#### AWS + Cloudflare Infrastructure (`modules/frontend/aws_plus_cloudflare`)
+Used by textnotifications.app, this pattern uses:
 - **Content Storage**: Amazon S3 with website hosting enabled
 - **Content Delivery**: Cloudflare CDN
 - **DNS Management**: Cloudflare DNS
 - **SSL/TLS**: Cloudflare SSL
 
-This pattern is suitable for users who prefer Cloudflare's CDN features, DDoS protection, and DNS management capabilities.
-
-## Backend Infrastructure
+### Backend Infrastructure (`modules/backend`)
 The backend infrastructure includes:
-- **Storage**: S3 buckets for data storage
-- **Database**: DynamoDB tables for metadata
-- **Compute**: Lambda functions for serverless processing
+- **Asset Storage**: S3 buckets with lifecycle policies
+- **Metadata**: DynamoDB tables with TTL support
+- **Compute**: Lambda functions with S3-based deployment
+- **Scheduling**: EventBridge for scheduled tasks
 
-## Adding a New Website
-
-1. Choose your frontend infrastructure pattern based on your needs:
-   - AWS-only: Full AWS stack with CloudFront and Route53
-   - AWS+Cloudflare: S3 storage with Cloudflare CDN and DNS
-
-2. Create a new directory for your site with the following structure:
-   ```
-   your-website/
-   ├── prod/
-   │   ├── frontend/  # Production frontend infrastructure
-   │   └── backend/   # Production backend services
-   └── dev/
-       ├── frontend/  # Development frontend infrastructure
-       └── backend/   # Development backend services
-   ```
-
-3. Configure the required files in each directory:
-   - `main.tf` - Module configurations
-   - `variables.tf` - Variable definitions
-   - `terraform.tfvars` - Variable values
+## Project Structure
+```
+.
+├── modules/
+│   ├── backend/
+│   │   ├── metadata/      # DynamoDB table configurations
+│   │   └── storage/       # S3 bucket configurations
+│   └── frontend/
+│       ├── aws_only/      # CloudFront + Route53 pattern
+│       └── aws_plus_cloudflare/  # S3 + Cloudflare pattern
+├── text-notifications-website/
+│   └── prod/
+│       ├── backend/       # Lambda + DynamoDB + S3
+│       └── frontend/      # S3 + Cloudflare
+└── jsolly-website/
+    └── prod/             # CloudFront + S3 + Route53
+```
 
 ## Prerequisites
 
-- AWS Account
+- AWS Account with admin access
 - Terraform ~> 5.0
-- Cloudflare Account (only if using AWS+Cloudflare pattern)
+- For textnotifications.app:
+  - Cloudflare Account
+  - Cloudflare API Token
+  - NASA API Key
+- For jsolly.com:
+  - Route53 Hosted Zone
+  - ACM Certificate
 
-## Usage
+## Configuration
 
-1. Configure your AWS credentials
+1. Create a `terraform.tfvars` file in your project's environment directory:
 
-2. Navigate to your website's environment directory:
-   ```bash
-   cd your-website/prod/frontend
-   ```
+For AWS + Cloudflare pattern:
+```hcl
+# Global configuration
+aws_region = "us-east-1"
 
-3. Update the variables in your environment's tfvars file:
+# Frontend configuration
+domain_name                      = "example.com"
+website_bucket_name              = "example.com"
+google_search_console_txt_record = "google-site-verification=<verification_code>"
+cloudflare_api_token            = "<cloudflare_api_token>"
+cloudflare_zone_id              = "<cloudflare_zone_id>"
 
-   For frontend (AWS-only pattern):
-   - `certificate_arn` - ACM certificate ARN
-   - `domain_name` - Your domain name
-   - `website_bucket_name` - S3 bucket name for the website
+# Backend configuration (if needed)
+asset_storage_bucket = "example-prod-storage"
+metadata_table_name  = "example-prod-metadata"
+lambda_code_bucket   = "example-prod-lambda-code"
+lambda_code_key      = "functions/your-function/deployment.zip"
+```
 
-   For frontend (AWS+Cloudflare pattern):
-   - `cloudflare_api_token` - Cloudflare API token
-   - `cloudflare_zone_id` - Cloudflare zone ID
-   - `domain_name` - Your domain name
-   - `website_bucket_name` - S3 bucket name for the website
-   - `google_search_console_txt_record` (optional) - For Google Search Console verification
+For AWS-only pattern:
+```hcl
+certificate_arn     = "arn:aws:acm:<region>:<account_id>:certificate/<certificate_id>"
+domain_name         = "example.com"
+website_bucket_name = "example-website"
+```
 
-   For backend:
-   - `storage_bucket_name` - S3 bucket name for data storage
-   - `metadata_table_name` - DynamoDB table name
-   - Additional service-specific variables as needed
-
-4. Initialize and apply Terraform:
-   ```bash
-   terraform init
-   terraform plan
-   terraform apply
-   ```
+2. Initialize and apply Terraform:
+```bash
+terraform init
+terraform plan
+terraform apply
+```
 
 ## License
 

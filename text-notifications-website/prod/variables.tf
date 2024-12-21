@@ -36,7 +36,7 @@ variable "domain_name" {
 
 ## Backend variables
 
-variable "storage_bucket_name" {
+variable "asset_storage_bucket" {
   description = "Name of the S3 bucket for storage"
   type        = string
 }
@@ -53,9 +53,14 @@ variable "photo_fetcher_name" {
   default     = "photo-fetcher"
 }
 
-variable "lambda_zip_path" {
+variable "lambda_code_bucket" {
+  description = "Name of the S3 bucket containing the Lambda function code"
   type        = string
+}
+
+variable "lambda_code_key" {
   description = "Path to the Lambda zip file"
+  type        = string
 }
 
 variable "nasa_api_key" {

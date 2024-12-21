@@ -1,4 +1,4 @@
-variable "storage_bucket_name" {
+variable "asset_storage_bucket" {
   description = "Name of the S3 bucket for storing images"
   type        = string
 }

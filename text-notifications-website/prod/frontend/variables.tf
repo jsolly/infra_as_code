@@ -3,7 +3,7 @@ variable "domain_name" {
   type        = string
 }
 
-variable "storage_bucket_name" {
+variable "asset_storage_bucket" {
   description = "Name of the S3 bucket for storage"
   type        = string
 }

@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "storage_bucket" {
-  bucket        = var.storage_bucket_name
+  bucket        = var.asset_storage_bucket
   force_destroy = true
 }
 
@@ -13,6 +13,7 @@ resource "aws_s3_bucket_public_access_block" "storage_bucket" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "storage_bucket" {
+  count  = var.expiration_days != null ? 1 : 0
   bucket = aws_s3_bucket.storage_bucket.id
 
   rule {

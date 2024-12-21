@@ -33,10 +33,11 @@ provider "cloudflare" {
 module "backend" {
   source = "./backend"
 
-  storage_bucket_name  = var.storage_bucket_name
+  asset_storage_bucket = var.asset_storage_bucket
   metadata_table_name  = var.metadata_table_name
   photo_fetcher_name   = var.photo_fetcher_name
-  lambda_zip_path      = var.lambda_zip_path
+  lambda_code_bucket   = var.lambda_code_bucket
+  lambda_code_key      = var.lambda_code_key
   nasa_api_key         = var.nasa_api_key
   function_handler     = var.function_handler
   runtime              = var.runtime
@@ -47,11 +48,11 @@ module "backend" {
 module "frontend" {
   source = "./frontend"
 
-  domain_name         = var.domain_name
-  website_bucket_name = var.website_bucket_name
-  storage_bucket_name = var.storage_bucket_name
-  metadata_table_name = var.metadata_table_name
-  aws_region          = var.aws_region
+  domain_name          = var.domain_name
+  website_bucket_name  = var.website_bucket_name
+  asset_storage_bucket = var.asset_storage_bucket
+  metadata_table_name  = var.metadata_table_name
+  aws_region           = var.aws_region
 
   cloudflare_api_token = var.cloudflare_api_token
   cloudflare_zone_id   = var.cloudflare_zone_id
