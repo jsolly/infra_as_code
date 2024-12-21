@@ -76,10 +76,15 @@ resource "aws_iam_role_policy_attachment" "lambda_basic" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+data "aws_s3_object" "lambda_code" {
+  bucket = var.lambda_code_bucket
+  key    = var.lambda_code_key
+}
+
 resource "aws_lambda_function" "nasa_photo_fetcher" {
   s3_bucket        = var.lambda_code_bucket
   s3_key           = var.lambda_code_key
-  source_code_hash = data.aws_s3_object.lambda_code.checksum_sha256
+  source_code_hash = data.aws_s3_object.lambda_code.etag
   function_name    = var.photo_fetcher_name
   role             = aws_iam_role.lambda_role.arn
   handler          = var.function_handler
@@ -94,12 +99,6 @@ resource "aws_lambda_function" "nasa_photo_fetcher" {
       METADATA_TABLE_NAME  = module.metadata.table_name
     }
   }
-}
-
-# Add this data source to get the hash of the S3 object
-data "aws_s3_object" "lambda_code" {
-  bucket = var.lambda_code_bucket
-  key    = var.lambda_code_key
 }
 
 resource "aws_cloudwatch_event_rule" "daily_trigger" {

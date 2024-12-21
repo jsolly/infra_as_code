@@ -6,4 +6,4 @@ output "bucket_name" {
 output "bucket_arn" {
   description = "ARN of the storage bucket"
   value       = aws_s3_bucket.storage_bucket.arn
-} 
+}
