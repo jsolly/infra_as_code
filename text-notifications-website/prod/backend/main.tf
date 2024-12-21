@@ -1,6 +1,6 @@
 module "asset_storage" {
-  source               = "../../../modules/backend/storage"
-  asset_storage_bucket = var.asset_storage_bucket
+  source         = "../../../modules/backend/storage"
+  storage_bucket = var.asset_storage_bucket
 }
 
 module "metadata" {
@@ -9,8 +9,8 @@ module "metadata" {
 }
 
 module "lambda_code_storage" {
-  source               = "../../../modules/backend/storage"
-  asset_storage_bucket = var.lambda_code_bucket
+  source         = "../../../modules/backend/storage"
+  storage_bucket = var.lambda_code_bucket
 }
 
 resource "aws_iam_role" "lambda_role" {
@@ -42,6 +42,11 @@ resource "aws_iam_role_policy" "s3_access" {
           "s3:GetObject"
         ]
         Resource = ["${module.asset_storage.bucket_arn}/*"]
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["s3:GetObject"]
+        Resource = ["${module.lambda_code_storage.bucket_arn}/*"]
       }
     ]
   })
@@ -72,21 +77,29 @@ resource "aws_iam_role_policy_attachment" "lambda_basic" {
 }
 
 resource "aws_lambda_function" "nasa_photo_fetcher" {
-  s3_bucket     = var.lambda_code_bucket
-  s3_key        = var.lambda_code_key
-  function_name = var.photo_fetcher_name
-  role          = aws_iam_role.lambda_role.arn
-  handler       = var.function_handler
-  runtime       = var.runtime
-  timeout       = var.function_timeout
-  memory_size   = var.function_memory_size
+  s3_bucket        = var.lambda_code_bucket
+  s3_key           = var.lambda_code_key
+  source_code_hash = data.aws_s3_object.lambda_code.checksum_sha256
+  function_name    = var.photo_fetcher_name
+  role             = aws_iam_role.lambda_role.arn
+  handler          = var.function_handler
+  runtime          = var.runtime
+  timeout          = var.function_timeout
+  memory_size      = var.function_memory_size
 
   environment {
     variables = {
-      NASA_API_KEY        = var.nasa_api_key
-      METADATA_TABLE_NAME = module.metadata.table_name
+      NASA_API_KEY         = var.nasa_api_key
+      ASSET_STORAGE_BUCKET = module.asset_storage.bucket_name
+      METADATA_TABLE_NAME  = module.metadata.table_name
     }
   }
+}
+
+# Add this data source to get the hash of the S3 object
+data "aws_s3_object" "lambda_code" {
+  bucket = var.lambda_code_bucket
+  key    = var.lambda_code_key
 }
 
 resource "aws_cloudwatch_event_rule" "daily_trigger" {
