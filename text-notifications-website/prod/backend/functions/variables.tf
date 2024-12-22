@@ -67,3 +67,41 @@ variable "function_memory_size" {
   description = "Memory size for the Lambda function in MB"
   default     = 128
 }
+
+variable "photo_sender_name" {
+  type        = string
+  description = "Name of the photo sender Lambda function"
+}
+
+variable "photo_sender_lambda_code_key" {
+  type        = string
+  description = "S3 key for the photo sender Lambda function code"
+}
+
+variable "photo_sender_function_handler" {
+  type        = string
+  description = "Handler function for the photo sender Lambda"
+  default     = "index.handler"
+}
+
+variable "twilio_account_sid" {
+  type        = string
+  description = "Twilio Account SID"
+  sensitive   = true
+}
+
+variable "twilio_auth_token" {
+  type        = string
+  description = "Twilio Auth Token"
+  sensitive   = true
+}
+
+variable "twilio_phone_number" {
+  type        = string
+  description = "Twilio Phone Number"
+}
+
+variable "target_phone_number" {
+  type        = string
+  description = "Target Phone Number to send messages to"
+}
