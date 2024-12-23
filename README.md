@@ -47,7 +47,7 @@ The backend infrastructure includes:
 │       │   └── functions/               # NASA photo fetcher + sender Lambdas
 │       └── frontend/                    # S3 + Cloudflare configuration
 └── jsolly-website/
-    └── prod/                           # CloudFront + S3 + Route53 configuration
+    └── prod/                            # CloudFront + S3 + Route53 configuration
 ```
 
 ## Prerequisites
