@@ -1,13 +1,14 @@
+# These locals follow the naming convention of the website bucket name used in the other modules
 locals {
-  role_name                 = "${var.website_bucket_name}-nasa-photo-sender-role"
-  s3_policy_name            = "${var.website_bucket_name}-nasa-photo-sender-s3-access"
-  dynamo_policy_name        = "${var.website_bucket_name}-nasa-photo-sender-dynamodb-access"
-  trigger_rule_name         = "${var.website_bucket_name}-nasa-photo-sender-daily-trigger"
-  photo_sender_name         = "${var.website_bucket_name}-nasa-photo-sender"
-  asset_storage_bucket_name = "${var.website_bucket_name}-storage"
-  metadata_table_name       = "${var.website_bucket_name}-metadata"
+  role_name                 = "${var.website_bucket_name}-${var.environment}-nasa-photo-sender-role"
+  s3_policy_name            = "${var.website_bucket_name}-${var.environment}-nasa-photo-sender-s3-access"
+  dynamo_policy_name        = "${var.website_bucket_name}-${var.environment}-nasa-photo-sender-dynamodb-access"
+  trigger_rule_name         = "${var.website_bucket_name}-${var.environment}-nasa-photo-sender-daily-trigger"
+  photo_sender_name         = "${var.website_bucket_name}-${var.environment}-nasa-photo-sender"
+  asset_storage_bucket_name = "${var.website_bucket_name}-${var.environment}-assets"
+  metadata_table_name       = "${var.website_bucket_name}-${var.environment}-metadata"
   lambda_code_bucket        = "${var.website_bucket_name}-${var.environment}-lambda-code"
-  lambda_code_key           = "functions/nasa-photo-sender/deployment.zip"
+  lambda_code_key           = "nasa-photo-sender/deployment.zip"
 }
 
 resource "aws_iam_role" "lambda_role" {
