@@ -58,14 +58,14 @@ variable "twilio_auth_token" {
   description = "The Twilio auth token"
 }
 
-variable "twilio_phone_number" {
+variable "twilio_sender_phone_number" {
   type        = string
-  description = "The Twilio phone number"
+  description = "The Twilio sender phone number"
 }
 
-variable "target_phone_number" {
+variable "twilio_target_phone_number" {
   type        = string
-  description = "The target phone number"
+  description = "The Twilio target phone number"
 }
 
 

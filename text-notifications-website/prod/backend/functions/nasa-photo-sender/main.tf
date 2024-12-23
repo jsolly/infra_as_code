@@ -90,12 +90,12 @@ resource "aws_lambda_function" "nasa_photo_sender" {
 
   environment {
     variables = {
-      TWILIO_ACCOUNT_SID  = var.twilio_account_sid
-      TWILIO_AUTH_TOKEN   = var.twilio_auth_token
-      TWILIO_PHONE_NUMBER = var.twilio_phone_number
-      TARGET_PHONE_NUMBER = var.target_phone_number
-      METADATA_TABLE_NAME = local.metadata_table_name
-      STORAGE_BUCKET_NAME = local.asset_storage_bucket_name
+      TWILIO_ACCOUNT_SID         = var.twilio_account_sid
+      TWILIO_AUTH_TOKEN          = var.twilio_auth_token
+      TWILIO_SENDER_PHONE_NUMBER = var.twilio_sender_phone_number
+      TWILIO_TARGET_PHONE_NUMBER = var.twilio_target_phone_number
+      METADATA_TABLE_NAME        = local.metadata_table_name
+      ASSET_STORAGE_BUCKET_NAME  = local.asset_storage_bucket_name
     }
   }
 }

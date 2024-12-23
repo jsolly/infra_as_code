@@ -36,12 +36,12 @@ variable "twilio_auth_token" {
   sensitive   = true
 }
 
-variable "twilio_phone_number" {
+variable "twilio_sender_phone_number" {
   type        = string
-  description = "Twilio Phone Number"
+  description = "Twilio Sender Phone Number"
 }
 
-variable "target_phone_number" {
+variable "twilio_target_phone_number" {
   type        = string
-  description = "Target Phone Number to send messages to"
+  description = "Twilio Target Phone Number to send messages to"
 }

@@ -33,12 +33,12 @@ provider "cloudflare" {
 module "backend" {
   source = "./backend"
 
-  website_bucket_name = var.website_bucket_name
-  nasa_api_key        = var.nasa_api_key
-  twilio_account_sid  = var.twilio_account_sid
-  twilio_auth_token   = var.twilio_auth_token
-  twilio_phone_number = var.twilio_phone_number
-  target_phone_number = var.target_phone_number
+  website_bucket_name        = var.website_bucket_name
+  nasa_api_key               = var.nasa_api_key
+  twilio_account_sid         = var.twilio_account_sid
+  twilio_auth_token          = var.twilio_auth_token
+  twilio_sender_phone_number = var.twilio_sender_phone_number
+  twilio_target_phone_number = var.twilio_target_phone_number
 }
 
 # Frontend configuration

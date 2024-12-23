@@ -53,12 +53,12 @@ variable "twilio_auth_token" {
   sensitive   = true
 }
 
-variable "twilio_phone_number" {
+variable "twilio_sender_phone_number" {
   description = "Twilio phone number"
   type        = string
 }
 
-variable "target_phone_number" {
+variable "twilio_target_phone_number" {
   description = "Target phone number"
   type        = string
 }

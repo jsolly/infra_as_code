@@ -25,6 +25,6 @@ module "functions" {
   metadata_table_arn             = module.metadata.table_arn
   twilio_account_sid             = var.twilio_account_sid
   twilio_auth_token              = var.twilio_auth_token
-  twilio_phone_number            = var.twilio_phone_number
-  target_phone_number            = var.target_phone_number
+  twilio_sender_phone_number     = var.twilio_sender_phone_number
+  twilio_target_phone_number     = var.twilio_target_phone_number
 }

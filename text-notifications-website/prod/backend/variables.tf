@@ -27,14 +27,14 @@ variable "twilio_auth_token" {
   sensitive   = true
 }
 
-variable "twilio_phone_number" {
+variable "twilio_sender_phone_number" {
   type        = string
-  description = "Twilio phone number"
+  description = "Twilio sender phone number"
   sensitive   = true
 }
 
-variable "target_phone_number" {
+variable "twilio_target_phone_number" {
   type        = string
-  description = "Target phone number"
+  description = "Twilio target phone number"
   sensitive   = true
 }
