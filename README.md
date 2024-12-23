@@ -43,9 +43,8 @@ The backend infrastructure includes:
 │       └── aws_plus_cloudflare/         # S3 + Cloudflare with IP restrictions
 ├── text-notifications-website/
 │   └── prod/
-│       ├── backend/       
-│       │   └── functions/               # NASA photo fetcher + sender Lambdas
-│       └── frontend/                    # S3 + Cloudflare configuration
+│       └── backend/       
+│           └── functions/               # NASA photo fetcher + sender Lambdas
 └── jsolly-website/
     └── prod/                            # CloudFront + S3 + Route53 configuration
 ```

@@ -41,12 +41,21 @@ module "backend" {
   target_phone_number = var.target_phone_number
 }
 
-module "frontend" {
-  source = "./frontend"
-
+# Frontend configuration
+module "cloudflare" {
+  source                           = "../../modules/frontend/aws_plus_cloudflare/cloudflare"
+  cloudflare_zone_id               = var.cloudflare_zone_id
   domain_name                      = var.domain_name
   website_bucket_name              = var.website_bucket_name
   aws_region                       = var.aws_region
-  cloudflare_zone_id               = var.cloudflare_zone_id
   google_search_console_txt_record = var.google_search_console_txt_record
+}
+
+module "website_buckets" {
+  source              = "../../modules/frontend/aws_plus_cloudflare/s3"
+  website_bucket_name = var.domain_name
+  website_config = {
+    index_document = "index.html"
+    error_document = "500.html"
+  }
 }
