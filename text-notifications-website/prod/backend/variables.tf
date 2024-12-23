@@ -1,27 +1,12 @@
-variable "asset_storage_bucket" {
-  description = "Name of the S3 bucket for storing images"
+variable "website_bucket_name" {
   type        = string
+  description = "Base name of the website bucket"
 }
 
-variable "metadata_table_name" {
-  description = "Name of the DynamoDB table for storing metadata"
+variable "environment" {
   type        = string
-}
-
-variable "photo_fetcher_name" {
-  type        = string
-  description = "Name of the photo fetcher Lambda function"
-  default     = "photo-fetcher"
-}
-
-variable "lambda_code_bucket" {
-  description = "Name of the S3 bucket containing the Lambda function code"
-  type        = string
-}
-
-variable "lambda_code_key" {
-  description = "Path to the Lambda zip file"
-  type        = string
+  description = "Environment name (e.g., prod, dev, staging)"
+  default     = "prod"
 }
 
 variable "nasa_api_key" {
@@ -30,26 +15,26 @@ variable "nasa_api_key" {
   sensitive   = true
 }
 
-variable "function_handler" {
+variable "twilio_account_sid" {
   type        = string
-  description = "Handler function for the Lambda"
-  default     = "index.handler"
+  description = "Twilio account SID"
+  sensitive   = true
 }
 
-variable "runtime" {
+variable "twilio_auth_token" {
   type        = string
-  description = "Runtime for the Lambda function"
-  default     = "python3.11"
+  description = "Twilio auth token"
+  sensitive   = true
 }
 
-variable "function_timeout" {
-  type        = number
-  description = "Timeout for the Lambda function in seconds"
-  default     = 30
+variable "twilio_phone_number" {
+  type        = string
+  description = "Twilio phone number"
+  sensitive   = true
 }
 
-variable "function_memory_size" {
-  type        = number
-  description = "Memory size for the Lambda function in MB"
-  default     = 128
+variable "target_phone_number" {
+  type        = string
+  description = "Target phone number"
+  sensitive   = true
 }

@@ -36,7 +36,9 @@ resource "aws_s3_bucket_public_access_block" "www_bucket" {
 }
 
 resource "aws_s3_bucket_policy" "www_bucket_policy" {
-  bucket = aws_s3_bucket.www_bucket.id
+  # Need to allow publlic access before allowing Cloudflare IPs to access the bucket
+  depends_on = [aws_s3_bucket_public_access_block.www_bucket]
+  bucket     = aws_s3_bucket.www_bucket.id
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [

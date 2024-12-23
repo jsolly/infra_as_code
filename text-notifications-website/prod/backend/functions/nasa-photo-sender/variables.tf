@@ -1,85 +1,71 @@
-variable "photo_sender_name" {
+variable "environment" {
   type        = string
-  description = "Name of the photo sender Lambda function"
+  description = "The environment of the website"
+  default     = "prod"
 }
 
-variable "lambda_code_bucket" {
-  description = "Name of the S3 bucket containing the Lambda function code"
+variable "website_bucket_name" {
   type        = string
+  description = "The name of the website bucket"
 }
 
-variable "lambda_code_key" {
-  description = "Path to the Lambda zip file"
+variable "asset_storage_bucket_arn" {
   type        = string
+  description = "The ARN of the asset storage bucket"
 }
 
-variable "asset_storage_bucket_name" {
+variable "lambda_code_storage_bucket_arn" {
   type        = string
-  description = "Name of the asset storage bucket"
+  description = "The ARN of the lambda code storage bucket"
 }
 
-variable "metadata_table_name" {
+variable "metadata_table_arn" {
   type        = string
-  description = "Name of the metadata DynamoDB table"
-}
-
-variable "twilio_account_sid" {
-  type        = string
-  description = "Twilio Account SID"
-  sensitive   = true
-}
-
-variable "twilio_auth_token" {
-  type        = string
-  description = "Twilio Auth Token"
-  sensitive   = true
-}
-
-variable "twilio_phone_number" {
-  type        = string
-  description = "Twilio Phone Number"
-}
-
-variable "target_phone_number" {
-  type        = string
-  description = "Target Phone Number to send messages to"
+  description = "The ARN of the metadata table"
 }
 
 variable "function_handler" {
   type        = string
-  description = "Handler function for the Lambda"
+  description = "The handler for the lambda function"
   default     = "index.handler"
 }
 
 variable "runtime" {
   type        = string
-  description = "Runtime for the Lambda function"
-  default     = "python3.11"
+  description = "The runtime for the lambda function"
+  default     = "python3.12"
 }
 
 variable "function_timeout" {
   type        = number
-  description = "Timeout for the Lambda function in seconds"
+  description = "The timeout for the lambda function"
   default     = 30
 }
 
 variable "function_memory_size" {
   type        = number
-  description = "Memory size for the Lambda function in MB"
+  description = "The memory size for the lambda function"
   default     = 128
 }
 
-variable "asset_storage_bucket_arn" {
+variable "twilio_account_sid" {
   type        = string
-  description = "ARN of the asset storage bucket"
+  description = "The Twilio account SID"
 }
 
-variable "lambda_code_storage_bucket_arn" {
+variable "twilio_auth_token" {
   type        = string
-  description = "ARN of the Lambda code storage bucket"
+  description = "The Twilio auth token"
 }
 
-variable "metadata_table_arn" {
+variable "twilio_phone_number" {
   type        = string
-  description = "ARN of the metadata DynamoDB table"
-} 
+  description = "The Twilio phone number"
+}
+
+variable "target_phone_number" {
+  type        = string
+  description = "The target phone number"
+}
+
+

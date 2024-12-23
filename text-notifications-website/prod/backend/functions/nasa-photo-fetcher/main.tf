@@ -1,5 +1,18 @@
+# These locals follow the naming convention of the website bucket name used in the other modules
+locals {
+  role_name                 = "${var.website_bucket_name}-${var.environment}-nasa-photo-fetcher-role"
+  s3_policy_name            = "${var.website_bucket_name}-${var.environment}-nasa-photo-fetcher-s3-access"
+  dynamo_policy_name        = "${var.website_bucket_name}-${var.environment}-nasa-photo-fetcher-dynamodb-access"
+  trigger_rule_name         = "${var.website_bucket_name}-${var.environment}-nasa-photo-fetcher-daily-trigger"
+  photo_fetcher_name        = "${var.website_bucket_name}-${var.environment}-nasa-photo-fetcher"
+  asset_storage_bucket_name = "${var.website_bucket_name}-${var.environment}-assets"
+  metadata_table_name       = "${var.website_bucket_name}-${var.environment}-metadata"
+  lambda_code_bucket        = "${var.website_bucket_name}-${var.environment}-lambda-code"
+  lambda_code_key           = "nasa-photo-fetcher/deployment.zip"
+}
+
 resource "aws_iam_role" "lambda_role" {
-  name = "${var.photo_fetcher_name}-role"
+  name = local.role_name
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -14,7 +27,7 @@ resource "aws_iam_role" "lambda_role" {
 }
 
 resource "aws_iam_role_policy" "s3_access" {
-  name = "${var.photo_fetcher_name}-s3-access"
+  name = local.s3_policy_name
   role = aws_iam_role.lambda_role.id
 
   policy = jsonencode({
@@ -38,7 +51,7 @@ resource "aws_iam_role_policy" "s3_access" {
 }
 
 resource "aws_iam_role_policy" "dynamodb_access" {
-  name = "${var.photo_fetcher_name}-dynamodb-access"
+  name = local.dynamo_policy_name
   role = aws_iam_role.lambda_role.id
 
   policy = jsonencode({
@@ -61,17 +74,16 @@ resource "aws_iam_role_policy_attachment" "lambda_basic" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-# Lambda Function and related resources
 data "aws_s3_object" "lambda_code" {
-  bucket = var.lambda_code_bucket
-  key    = var.lambda_code_key
+  bucket = local.lambda_code_bucket
+  key    = local.lambda_code_key
 }
 
 resource "aws_lambda_function" "nasa_photo_fetcher" {
-  s3_bucket        = var.lambda_code_bucket
-  s3_key           = var.lambda_code_key
+  s3_bucket        = local.lambda_code_bucket
+  s3_key           = local.lambda_code_key
   source_code_hash = data.aws_s3_object.lambda_code.etag
-  function_name    = var.photo_fetcher_name
+  function_name    = local.photo_fetcher_name
   role             = aws_iam_role.lambda_role.arn
   handler          = var.function_handler
   runtime          = var.runtime
@@ -81,14 +93,14 @@ resource "aws_lambda_function" "nasa_photo_fetcher" {
   environment {
     variables = {
       NASA_API_KEY         = var.nasa_api_key
-      ASSET_STORAGE_BUCKET = var.asset_storage_bucket_name
-      METADATA_TABLE_NAME  = var.metadata_table_name
+      ASSET_STORAGE_BUCKET = local.asset_storage_bucket_name
+      METADATA_TABLE_NAME  = local.metadata_table_name
     }
   }
 }
 
 resource "aws_cloudwatch_event_rule" "daily_trigger" {
-  name                = "${var.photo_fetcher_name}-daily-trigger"
+  name                = local.trigger_rule_name
   description         = "Triggers the NASA photo fetcher Lambda function daily at 1 AM"
   schedule_expression = "cron(0 1 * * ? *)"
 }

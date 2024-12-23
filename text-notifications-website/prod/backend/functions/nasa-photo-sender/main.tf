@@ -1,5 +1,17 @@
+locals {
+  role_name                 = "${var.website_bucket_name}-nasa-photo-sender-role"
+  s3_policy_name            = "${var.website_bucket_name}-nasa-photo-sender-s3-access"
+  dynamo_policy_name        = "${var.website_bucket_name}-nasa-photo-sender-dynamodb-access"
+  trigger_rule_name         = "${var.website_bucket_name}-nasa-photo-sender-daily-trigger"
+  photo_sender_name         = "${var.website_bucket_name}-nasa-photo-sender"
+  asset_storage_bucket_name = "${var.website_bucket_name}-storage"
+  metadata_table_name       = "${var.website_bucket_name}-metadata"
+  lambda_code_bucket        = "${var.website_bucket_name}-${var.environment}-lambda-code"
+  lambda_code_key           = "functions/nasa-photo-sender/deployment.zip"
+}
+
 resource "aws_iam_role" "lambda_role" {
-  name = "${var.photo_sender_name}-role"
+  name = local.role_name
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -14,7 +26,7 @@ resource "aws_iam_role" "lambda_role" {
 }
 
 resource "aws_iam_role_policy" "s3_access" {
-  name = "${var.photo_sender_name}-s3-access"
+  name = local.s3_policy_name
   role = aws_iam_role.lambda_role.id
 
   policy = jsonencode({
@@ -37,7 +49,7 @@ resource "aws_iam_role_policy" "s3_access" {
 }
 
 resource "aws_iam_role_policy" "dynamodb_access" {
-  name = "${var.photo_sender_name}-dynamodb-access"
+  name = local.dynamo_policy_name
   role = aws_iam_role.lambda_role.id
 
   policy = jsonencode({
@@ -60,15 +72,15 @@ resource "aws_iam_role_policy_attachment" "lambda_basic" {
 }
 
 data "aws_s3_object" "lambda_code" {
-  bucket = var.lambda_code_bucket
-  key    = var.lambda_code_key
+  bucket = local.lambda_code_bucket
+  key    = local.lambda_code_key
 }
 
 resource "aws_lambda_function" "nasa_photo_sender" {
-  s3_bucket        = var.lambda_code_bucket
-  s3_key           = var.lambda_code_key
+  s3_bucket        = local.lambda_code_bucket
+  s3_key           = local.lambda_code_key
   source_code_hash = data.aws_s3_object.lambda_code.etag
-  function_name    = var.photo_sender_name
+  function_name    = local.photo_sender_name
   role             = aws_iam_role.lambda_role.arn
   handler          = var.function_handler
   runtime          = var.runtime
@@ -81,14 +93,14 @@ resource "aws_lambda_function" "nasa_photo_sender" {
       TWILIO_AUTH_TOKEN   = var.twilio_auth_token
       TWILIO_PHONE_NUMBER = var.twilio_phone_number
       TARGET_PHONE_NUMBER = var.target_phone_number
-      METADATA_TABLE_NAME = var.metadata_table_name
-      STORAGE_BUCKET_NAME = var.asset_storage_bucket_name
+      METADATA_TABLE_NAME = local.metadata_table_name
+      STORAGE_BUCKET_NAME = local.asset_storage_bucket_name
     }
   }
 }
 
 resource "aws_cloudwatch_event_rule" "daily_trigger" {
-  name                = "${var.photo_sender_name}-daily-trigger"
+  name                = local.trigger_rule_name
   description         = "Triggers the NASA photo sender Lambda function daily at 2 AM"
   schedule_expression = "cron(0 2 * * ? *)"
 }

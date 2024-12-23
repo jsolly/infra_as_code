@@ -1,5 +1,9 @@
+locals {
+  metadata_table_name = "${var.website_bucket_name}-${var.environment}-metadata"
+}
+
 resource "aws_dynamodb_table" "metadata_table" {
-  name         = var.metadata_table_name
+  name         = local.metadata_table_name
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "date"
 

@@ -1,94 +1,64 @@
-## Global variables
-
 variable "aws_region" {
   description = "AWS Region"
   type        = string
   default     = "us-east-1"
 }
 
-variable "cloudflare_api_token" {
+variable "environment" {
+  description = "Environment"
   type        = string
-  description = "Cloudflare API token"
-  sensitive   = true
+  default     = "prod"
 }
 
-## Frontend variables
+variable "cloudflare_api_token" {
+  description = "Cloudflare API Token"
+  type        = string
+  sensitive   = true
+}
+variable "cloudflare_zone_id" {
+  description = "Cloudflare Zone ID"
+  type        = string
+}
 
 variable "google_search_console_txt_record" {
-  description = "The Google Search Console TXT record"
+  description = "Google Search Console TXT Record"
   type        = string
 }
 
 variable "website_bucket_name" {
-  description = "Name of the S3 bucket to create for the static website"
-  type        = string
-}
-
-variable "cloudflare_zone_id" {
-  description = "The zone ID for the Cloudflare domain"
+  description = "Name of the website bucket"
   type        = string
 }
 
 variable "domain_name" {
-  description = "Base domain name for the application (e.g., example.com)"
-  type        = string
-}
-
-## Backend variables
-
-variable "asset_storage_bucket" {
-  description = "Name of the S3 bucket for storage"
-  type        = string
-}
-
-variable "metadata_table_name" {
-  description = "Name of the DynamoDB table for metadata"
-  type        = string
-}
-
-
-variable "photo_fetcher_name" {
-  type        = string
-  description = "Name of the photo fetcher Lambda function"
-  default     = "photo-fetcher"
-}
-
-variable "lambda_code_bucket" {
-  description = "Name of the S3 bucket containing the Lambda function code"
-  type        = string
-}
-
-variable "lambda_code_key" {
-  description = "Path to the Lambda zip file"
+  description = "Domain name"
   type        = string
 }
 
 variable "nasa_api_key" {
+  description = "NASA API Key"
   type        = string
-  description = "API key for the NASA photo service"
   sensitive   = true
 }
 
-variable "function_handler" {
+variable "twilio_account_sid" {
+  description = "Twilio Account SID"
   type        = string
-  description = "Handler function for the Lambda"
-  default     = "index.handler"
+  sensitive   = true
 }
 
-variable "runtime" {
+variable "twilio_auth_token" {
+  description = "Twilio Auth Token"
   type        = string
-  description = "Runtime for the Lambda function"
-  default     = "python3.11"
+  sensitive   = true
 }
 
-variable "function_timeout" {
-  type        = number
-  description = "Timeout for the Lambda function in seconds"
-  default     = 30
+variable "twilio_phone_number" {
+  description = "Twilio phone number"
+  type        = string
 }
 
-variable "function_memory_size" {
-  type        = number
-  description = "Memory size for the Lambda function in MB"
-  default     = 128
+variable "target_phone_number" {
+  description = "Target phone number"
+  type        = string
 }
