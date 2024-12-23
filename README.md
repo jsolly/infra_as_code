@@ -36,20 +36,18 @@ The backend infrastructure includes:
 .
 ├── modules/
 │   ├── backend/
-│   │   ├── metadata/      # DynamoDB table configurations
-│   │   └── storage/       # S3 bucket configurations
+│   │   ├── metadata/                    # DynamoDB table configurations
+│   │   └── storage/                     # S3 bucket configurations
 │   └── frontend/
-│       ├── aws_only/      # CloudFront + Route53 + S3 with OAC
-│       └── aws_plus_cloudflare/  # S3 + Cloudflare with IP restrictions
+│       ├── aws_only/                    # CloudFront + Route53 + S3 with OAC
+│       └── aws_plus_cloudflare/         # S3 + Cloudflare with IP restrictions
 ├── text-notifications-website/
 │   └── prod/
 │       ├── backend/       
-│       │   ├── functions/ # NASA photo fetcher + sender Lambdas
-│       │   ├── metadata/  # DynamoDB table for photo metadata
-│       │   └── storage/   # S3 buckets for assets and Lambda code
-│       └── frontend/      # S3 + Cloudflare configuration
+│       │   └── functions/               # NASA photo fetcher + sender Lambdas
+│       └── frontend/                    # S3 + Cloudflare configuration
 └── jsolly-website/
-    └── prod/             # CloudFront + S3 + Route53 configuration
+    └── prod/                           # CloudFront + S3 + Route53 configuration
 ```
 
 ## Prerequisites
