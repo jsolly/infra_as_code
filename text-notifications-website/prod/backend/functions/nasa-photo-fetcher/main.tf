@@ -92,9 +92,9 @@ resource "aws_lambda_function" "nasa_photo_fetcher" {
 
   environment {
     variables = {
-      NASA_API_KEY         = var.nasa_api_key
-      ASSET_STORAGE_BUCKET = local.asset_storage_bucket_name
-      METADATA_TABLE_NAME  = local.metadata_table_name
+      NASA_API_KEY              = var.nasa_api_key
+      ASSET_STORAGE_BUCKET_NAME = local.asset_storage_bucket_name
+      METADATA_TABLE_NAME       = local.metadata_table_name
     }
   }
 }
