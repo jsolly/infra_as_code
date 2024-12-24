@@ -23,7 +23,7 @@ provider "aws" {
 }
 
 module "cloudfront" {
-  source             = "../../modules/frontend/aws_only/cloudfront"
+  source             = "../../modules/static_website/aws_only/cloudfront"
   bucket_domain_name = module.s3.bucket_domain_name
   bucket_id          = module.s3.bucket_id
   certificate_arn    = var.certificate_arn
@@ -31,13 +31,13 @@ module "cloudfront" {
 }
 
 module "s3" {
-  source                      = "../../modules/frontend/aws_only/s3"
+  source                      = "../../modules/static_website/aws_only/s3"
   website_bucket_name         = var.website_bucket_name
   cloudfront_distribution_arn = module.cloudfront.distribution_arn
 }
 
 module "route53" {
-  source                    = "../../modules/frontend/aws_only/route53"
+  source                    = "../../modules/static_website/aws_only/route53"
   domain_name               = var.domain_name
   cloudfront_domain_name    = module.cloudfront.domain_name
   website_bucket_name       = var.website_bucket_name

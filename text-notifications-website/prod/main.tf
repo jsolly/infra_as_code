@@ -43,7 +43,7 @@ module "backend" {
 
 # Frontend configuration
 module "cloudflare" {
-  source                           = "../../modules/frontend/aws_plus_cloudflare/cloudflare"
+  source                           = "../../modules/static_website/aws_plus_cloudflare/cloudflare"
   cloudflare_zone_id               = var.cloudflare_zone_id
   domain_name                      = var.domain_name
   website_bucket_name              = var.website_bucket_name
@@ -52,7 +52,7 @@ module "cloudflare" {
 }
 
 module "website_buckets" {
-  source              = "../../modules/frontend/aws_plus_cloudflare/s3"
+  source              = "../../modules/static_website/aws_plus_cloudflare/s3"
   website_bucket_name = var.domain_name
   website_config = {
     index_document = "index.html"
