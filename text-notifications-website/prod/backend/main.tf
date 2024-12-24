@@ -1,17 +1,17 @@
 module "lambda_code_storage" {
-  source              = "../../../modules/backend/storage"
+  source              = "./storage"
   storage_bucket_name = "${var.website_bucket_name}-${var.environment}-lambda-code"
   environment         = var.environment
 }
 
 module "asset_storage" {
-  source              = "../../../modules/backend/storage"
+  source              = "./storage"
   storage_bucket_name = "${var.website_bucket_name}-${var.environment}-assets"
   environment         = var.environment
 }
 
 module "metadata" {
-  source              = "../../../modules/backend/metadata"
+  source              = "./metadata"
   website_bucket_name = var.website_bucket_name
   environment         = var.environment
 }
