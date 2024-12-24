@@ -5,12 +5,29 @@ locals {
 resource "aws_dynamodb_table" "metadata_table" {
   name         = local.metadata_table_name
   billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "date"
+  hash_key     = "PK"
+  range_key    = "SK"
 
-  # Primary key - must be in ISO 8601 format (YYYY-MM-DD)
+  # Partition key - will contain "APOD" to group all records
   attribute {
-    name = "date"
-    type = "S" # String type since dates in DynamoDB are stored as strings
+    name = "PK"
+    type = "S"
+  }
+
+  # Sort key - ISO 8601 format (YYYY-MM-DD)
+  # Items are automatically sorted by this key within each partition
+  attribute {
+    name = "SK"
+    type = "S"
+  }
+
+  # Global Secondary Index for querying by date directly
+  global_secondary_index {
+    name            = "DateIndex"
+    hash_key        = "SK"
+    projection_type = "ALL"
+    read_capacity   = 0
+    write_capacity  = 0
   }
 
   ttl {
