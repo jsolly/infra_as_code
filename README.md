@@ -26,7 +26,6 @@ Used by textnotifications.app, this pattern uses:
 The backend infrastructure (implemented in text-notifications-website/prod/backend) includes:
 
 #### Storage and Metadata
-- **Asset Storage**: S3 buckets with configurable lifecycle policies
 - **Metadata**: DynamoDB tables with TTL support and date-based indexing
 - **Compute**: Lambda functions with S3-based deployment and IAM roles
 - **Scheduling**: EventBridge for daily scheduled tasks
