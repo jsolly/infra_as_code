@@ -3,7 +3,6 @@ module "nasa_photo_fetcher" {
 
   website_bucket_name            = var.website_bucket_name
   nasa_api_key                   = var.nasa_api_key
-  asset_storage_bucket_arn       = var.asset_storage_bucket_arn
   lambda_code_storage_bucket_arn = var.lambda_code_storage_bucket_arn
   metadata_table_arn             = var.metadata_table_arn
 }
@@ -16,7 +15,7 @@ module "nasa_photo_sender" {
   twilio_auth_token              = var.twilio_auth_token
   twilio_sender_phone_number     = var.twilio_sender_phone_number
   twilio_target_phone_number     = var.twilio_target_phone_number
-  asset_storage_bucket_arn       = var.asset_storage_bucket_arn
   lambda_code_storage_bucket_arn = var.lambda_code_storage_bucket_arn
   metadata_table_arn             = var.metadata_table_arn
+  nasa_api_key                   = var.nasa_api_key
 }

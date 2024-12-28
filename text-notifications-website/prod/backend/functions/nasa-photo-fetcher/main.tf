@@ -1,14 +1,13 @@
 # These locals follow the naming convention of the website bucket name used in the other modules
 locals {
-  role_name                 = "${var.website_bucket_name}-${var.environment}-nasa-photo-fetcher-role"
-  s3_policy_name            = "${var.website_bucket_name}-${var.environment}-nasa-photo-fetcher-s3-access"
-  dynamo_policy_name        = "${var.website_bucket_name}-${var.environment}-nasa-photo-fetcher-dynamodb-access"
-  trigger_rule_name         = "${var.website_bucket_name}-${var.environment}-nasa-photo-fetcher-daily-trigger"
-  photo_fetcher_name        = "${var.website_bucket_name}-${var.environment}-nasa-photo-fetcher"
-  asset_storage_bucket_name = "${var.website_bucket_name}-${var.environment}-assets"
-  metadata_table_name       = "${var.website_bucket_name}-${var.environment}-metadata"
-  lambda_code_bucket        = "${var.website_bucket_name}-${var.environment}-lambda-code"
-  lambda_code_key           = "nasa-photo-fetcher/deployment.zip"
+  role_name           = "${var.website_bucket_name}-${var.environment}-nasa-photo-fetcher-role"
+  s3_policy_name      = "${var.website_bucket_name}-${var.environment}-nasa-photo-fetcher-s3-access"
+  dynamo_policy_name  = "${var.website_bucket_name}-${var.environment}-nasa-photo-fetcher-dynamodb-access"
+  trigger_rule_name   = "${var.website_bucket_name}-${var.environment}-nasa-photo-fetcher-daily-trigger"
+  photo_fetcher_name  = "${var.website_bucket_name}-${var.environment}-nasa-photo-fetcher"
+  metadata_table_name = "${var.website_bucket_name}-${var.environment}-metadata"
+  lambda_code_bucket  = "${var.website_bucket_name}-${var.environment}-lambda-code"
+  lambda_code_key     = "nasa-photo-fetcher/deployment.zip"
 }
 
 resource "aws_iam_role" "lambda_role" {
@@ -33,14 +32,6 @@ resource "aws_iam_role_policy" "s3_access" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "s3:PutObject",
-          "s3:GetObject"
-        ]
-        Resource = ["${var.asset_storage_bucket_arn}/*"]
-      },
       {
         Effect   = "Allow"
         Action   = ["s3:GetObject"]
@@ -92,9 +83,8 @@ resource "aws_lambda_function" "nasa_photo_fetcher" {
 
   environment {
     variables = {
-      NASA_API_KEY              = var.nasa_api_key
-      ASSET_STORAGE_BUCKET_NAME = local.asset_storage_bucket_name
-      METADATA_TABLE_NAME       = local.metadata_table_name
+      NASA_API_KEY        = var.nasa_api_key
+      METADATA_TABLE_NAME = local.metadata_table_name
     }
   }
 }

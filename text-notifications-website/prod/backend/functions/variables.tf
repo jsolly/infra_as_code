@@ -9,11 +9,6 @@ variable "nasa_api_key" {
   sensitive   = true
 }
 
-variable "asset_storage_bucket_arn" {
-  type        = string
-  description = "ARN of the asset storage bucket"
-}
-
 variable "lambda_code_storage_bucket_arn" {
   type        = string
   description = "ARN of the Lambda code storage bucket"

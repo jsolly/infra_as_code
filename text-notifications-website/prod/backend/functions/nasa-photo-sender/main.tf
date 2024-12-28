@@ -1,14 +1,11 @@
 # These locals follow the naming convention of the website bucket name used in the other modules
 locals {
-  role_name                 = "${var.website_bucket_name}-${var.environment}-nasa-photo-sender-role"
-  s3_policy_name            = "${var.website_bucket_name}-${var.environment}-nasa-photo-sender-s3-access"
-  dynamo_policy_name        = "${var.website_bucket_name}-${var.environment}-nasa-photo-sender-dynamodb-access"
-  trigger_rule_name         = "${var.website_bucket_name}-${var.environment}-nasa-photo-sender-daily-trigger"
-  photo_sender_name         = "${var.website_bucket_name}-${var.environment}-nasa-photo-sender"
-  asset_storage_bucket_name = "${var.website_bucket_name}-${var.environment}-assets"
-  metadata_table_name       = "${var.website_bucket_name}-${var.environment}-metadata"
-  lambda_code_bucket        = "${var.website_bucket_name}-${var.environment}-lambda-code"
-  lambda_code_key           = "nasa-photo-sender/deployment.zip"
+  role_name          = "${var.website_bucket_name}-${var.environment}-nasa-photo-sender-role"
+  s3_policy_name     = "${var.website_bucket_name}-${var.environment}-nasa-photo-sender-s3-access"
+  dynamo_policy_name = "${var.website_bucket_name}-${var.environment}-nasa-photo-sender-dynamodb-access"
+  photo_sender_name  = "${var.website_bucket_name}-${var.environment}-nasa-photo-sender"
+  lambda_code_bucket = "${var.website_bucket_name}-${var.environment}-lambda-code"
+  lambda_code_key    = "nasa-photo-sender/deployment.zip"
 }
 
 resource "aws_iam_role" "lambda_role" {
@@ -33,13 +30,6 @@ resource "aws_iam_role_policy" "s3_access" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "s3:GetObject"
-        ]
-        Resource = ["${var.asset_storage_bucket_arn}/*"]
-      },
       {
         Effect   = "Allow"
         Action   = ["s3:GetObject"]
@@ -94,28 +84,7 @@ resource "aws_lambda_function" "nasa_photo_sender" {
       TWILIO_AUTH_TOKEN          = var.twilio_auth_token
       TWILIO_SENDER_PHONE_NUMBER = var.twilio_sender_phone_number
       TWILIO_TARGET_PHONE_NUMBER = var.twilio_target_phone_number
-      METADATA_TABLE_NAME        = local.metadata_table_name
-      ASSET_STORAGE_BUCKET_NAME  = local.asset_storage_bucket_name
+      NASA_API_KEY               = var.nasa_api_key
     }
   }
-}
-
-resource "aws_cloudwatch_event_rule" "daily_trigger" {
-  name                = local.trigger_rule_name
-  description         = "Triggers the NASA photo sender Lambda function daily at 2 AM"
-  schedule_expression = "cron(0 2 * * ? *)"
-}
-
-resource "aws_cloudwatch_event_target" "lambda_target" {
-  rule      = aws_cloudwatch_event_rule.daily_trigger.name
-  target_id = "TriggerNASAPhotoSender"
-  arn       = aws_lambda_function.nasa_photo_sender.arn
-}
-
-resource "aws_lambda_permission" "allow_eventbridge" {
-  statement_id  = "AllowEventBridgeInvoke"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.nasa_photo_sender.function_name
-  principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.daily_trigger.arn
 }

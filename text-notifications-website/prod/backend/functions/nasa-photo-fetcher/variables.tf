@@ -9,11 +9,6 @@ variable "website_bucket_name" {
   description = "The name of the website bucket"
 }
 
-variable "asset_storage_bucket_arn" {
-  type        = string
-  description = "The ARN of the asset storage bucket"
-}
-
 variable "lambda_code_storage_bucket_arn" {
   type        = string
   description = "The ARN of the lambda code storage bucket"
