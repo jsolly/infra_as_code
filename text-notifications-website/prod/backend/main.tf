@@ -4,18 +4,24 @@ module "lambda_code_storage" {
   environment         = var.environment
 }
 
-module "metadata" {
-  source              = "./metadata"
+module "metadata-nosql" {
+  source              = "./metadata/NOSQL"
   website_bucket_name = var.website_bucket_name
   environment         = var.environment
 }
+
+# module "metadata-sql" {
+#   source              = "./metadata/SQL"
+#   environment         = var.environment
+#   website_bucket_name = var.website_bucket_name
+# }
 
 module "functions" {
   source                         = "./functions"
   website_bucket_name            = var.website_bucket_name
   nasa_api_key                   = var.nasa_api_key
   lambda_code_storage_bucket_arn = module.lambda_code_storage.bucket_arn
-  metadata_table_arn             = module.metadata.table_arn
+  metadata_table_arn             = module.metadata-nosql.table_arn
   twilio_account_sid             = var.twilio_account_sid
   twilio_auth_token              = var.twilio_auth_token
   twilio_sender_phone_number     = var.twilio_sender_phone_number

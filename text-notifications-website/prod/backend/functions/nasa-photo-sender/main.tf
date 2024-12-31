@@ -21,6 +21,11 @@ resource "aws_iam_role" "lambda_role" {
       }
     }]
   })
+
+  tags = {
+    Name        = local.role_name
+    Environment = var.environment
+  }
 }
 
 resource "aws_iam_role_policy" "s3_access" {
@@ -86,5 +91,10 @@ resource "aws_lambda_function" "nasa_photo_sender" {
       TWILIO_TARGET_PHONE_NUMBER = var.twilio_target_phone_number
       NASA_API_KEY               = var.nasa_api_key
     }
+  }
+
+  tags = {
+    Name        = local.photo_sender_name
+    Environment = var.environment
   }
 }

@@ -40,6 +40,8 @@ resource "aws_dynamodb_table" "metadata_table" {
   }
 
   tags = {
+    Name           = local.metadata_table_name
+    Environment    = var.environment
     ExpirationDays = var.expiration_days
   }
 }

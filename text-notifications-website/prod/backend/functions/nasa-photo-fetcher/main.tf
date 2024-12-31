@@ -23,6 +23,11 @@ resource "aws_iam_role" "lambda_role" {
       }
     }]
   })
+
+  tags = {
+    Name        = local.role_name
+    Environment = var.environment
+  }
 }
 
 resource "aws_iam_role_policy" "s3_access" {
@@ -87,12 +92,22 @@ resource "aws_lambda_function" "nasa_photo_fetcher" {
       METADATA_TABLE_NAME = local.metadata_table_name
     }
   }
+
+  tags = {
+    Name        = local.photo_fetcher_name
+    Environment = var.environment
+  }
 }
 
 resource "aws_cloudwatch_event_rule" "daily_trigger" {
   name                = local.trigger_rule_name
   description         = "Triggers the NASA photo fetcher Lambda function daily at 1 AM"
   schedule_expression = "cron(0 1 * * ? *)"
+
+  tags = {
+    Name        = local.trigger_rule_name
+    Environment = var.environment
+  }
 }
 
 resource "aws_cloudwatch_event_target" "lambda_target" {
