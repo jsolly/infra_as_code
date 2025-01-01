@@ -1,5 +1,5 @@
 module "nasa_photo_fetcher" {
-  source = "./nasa-photo-fetcher"
+  source = "./nasa-apod/photo-fetcher"
 
   website_bucket_name            = var.website_bucket_name
   nasa_api_key                   = var.nasa_api_key
@@ -8,7 +8,7 @@ module "nasa_photo_fetcher" {
 }
 
 module "nasa_photo_sender" {
-  source = "./nasa-photo-sender"
+  source = "./nasa-apod/photo-sender"
 
   website_bucket_name            = var.website_bucket_name
   twilio_account_sid             = var.twilio_account_sid
