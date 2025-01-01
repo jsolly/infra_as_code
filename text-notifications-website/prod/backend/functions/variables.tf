@@ -40,3 +40,13 @@ variable "twilio_target_phone_number" {
   type        = string
   description = "Twilio Target Phone Number to send messages to"
 }
+
+# variable "private_subnet_ids" {
+#   type        = list(string)
+#   description = "The private subnet IDs for Lambda VPC config"
+# }
+
+# variable "lambda_security_group_id" {
+#   type        = string
+#   description = "The security group ID for Lambda functions"
+# }

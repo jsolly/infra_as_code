@@ -19,3 +19,12 @@ module "nasa_photo_sender" {
   metadata_table_arn             = var.metadata_table_arn
   nasa_api_key                   = var.nasa_api_key
 }
+
+# module "weather_fetcher" {
+#   source = "./weather/weather-fetcher"
+
+#   website_bucket_name            = var.website_bucket_name
+#   lambda_code_storage_bucket_arn = var.lambda_code_storage_bucket_arn
+#   subnet_ids                     = var.private_subnet_ids
+#   lambda_security_group_id       = var.lambda_security_group_id
+# }
