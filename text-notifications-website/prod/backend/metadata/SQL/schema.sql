@@ -57,35 +57,3 @@ CREATE TABLE Notifications_Log (
         response_message TEXT,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
-
--- Create indexes
-CREATE INDEX idx_users_active_subscription ON Users(is_active, weather_subscription);
-
-CREATE INDEX idx_cities_name_country ON Cities(city_name, country);
-
-CREATE INDEX idx_user_cities_lookup ON User_Cities(user_id, city_id);
-
-CREATE INDEX idx_notifications_status ON Notifications_Log(delivery_status);
-
--- Create trigger for updated_at timestamps
-CREATE
-OR REPLACE FUNCTION update_updated_at_column() RETURNS TRIGGER AS $ $ BEGIN NEW.updated_at = CURRENT_TIMESTAMP;
-
-RETURN NEW;
-
-END;
-
-$ $ language 'plpgsql';
-
--- Apply trigger to relevant tables
-CREATE TRIGGER update_users_updated_at BEFORE
-UPDATE
-    ON Users FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_cities_updated_at BEFORE
-UPDATE
-    ON Cities FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_user_cities_updated_at BEFORE
-UPDATE
-    ON User_Cities FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
