@@ -1,8 +1,13 @@
 -- Users table
 CREATE TABLE Users (
     user_id SERIAL PRIMARY KEY,
+    preferred_name VARCHAR(100),
+    preferred_language VARCHAR(50),
+    city_of_residence VARCHAR(100),
     phone_number VARCHAR(20) UNIQUE NOT NULL,
     notification_time_zone VARCHAR(50) NOT NULL,
+    daily_notification_time TIME,
+    unit_preference VARCHAR(10),
     weather_subscription BOOLEAN DEFAULT true,
     is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -12,11 +17,11 @@ CREATE TABLE Users (
 -- Cities table
 CREATE TABLE Cities (
     city_id SERIAL PRIMARY KEY,
-    city_name VARCHAR(100) NOT NULL,
-    latitude DECIMAL(10, 8) NOT NULL,
-    longitude DECIMAL(11, 8) NOT NULL,
+    city_name VARCHAR(100) NOT NULL CHECK (city_name IN ('New York', 'Los Angeles', 'Chicago')),
+    latitude DECIMAL(10, 8) NOT NULL CHECK (latitude >= -90 AND latitude <= 90),
+    longitude DECIMAL(11, 8) NOT NULL CHECK (longitude >= -180 AND longitude <= 180),
     time_zone VARCHAR(50) NOT NULL,
-    country VARCHAR(100),
+    country VARCHAR(100) NOT NULL CHECK (country IN ('United States', 'Canada')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -36,24 +41,32 @@ CREATE TABLE CityWeather (
     weather_description TEXT NOT NULL,
     temperature DECIMAL(5, 2) NOT NULL,
     feels_like_temp DECIMAL(5, 2) NOT NULL,
-    humidity INTEGER NOT NULL,
-    cloud_coverage INTEGER NOT NULL,
-    wind_speed DECIMAL(5, 2) NOT NULL,
+    humidity INTEGER NOT NULL CHECK (humidity BETWEEN 0 AND 100),
+    cloud_coverage INTEGER NOT NULL CHECK (cloud_coverage BETWEEN 0 AND 100),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- NotificationPreferences table
+CREATE TABLE NotificationPreferences (
+    preference_id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES Users(user_id) ON DELETE CASCADE,
+    daily_fullmoon BOOLEAN DEFAULT false,
+    daily_nasa BOOLEAN DEFAULT false,
+    daily_weather_outfit BOOLEAN DEFAULT true,
+    daily_recipe BOOLEAN DEFAULT false,
+    instant_sunset BOOLEAN DEFAULT false,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Notifications_Log table
 CREATE TABLE Notifications_Log (
     notification_id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES Users(user_id) ON DELETE
-    SET
-        NULL,
-        city_id INTEGER REFERENCES Cities(city_id) ON DELETE
-    SET
-        NULL,
-        notification_time TIMESTAMP WITH TIME ZONE NOT NULL,
-        sent_time TIMESTAMP WITH TIME ZONE,
-        delivery_status VARCHAR(20) NOT NULL,
-        response_message TEXT,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    user_id INTEGER REFERENCES Users(user_id) ON DELETE SET NULL,
+    city_id INTEGER REFERENCES Cities(city_id) ON DELETE SET NULL,
+    notification_time TIMESTAMP WITH TIME ZONE NOT NULL,
+    sent_time TIMESTAMP WITH TIME ZONE,
+    delivery_status VARCHAR(20) NOT NULL,
+    response_message TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
