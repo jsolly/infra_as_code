@@ -3,20 +3,22 @@ CREATE TABLE Users (
     user_id SERIAL PRIMARY KEY,
     preferred_name VARCHAR(100),
     preferred_language VARCHAR(50) CHECK (preferred_language IN ('en', 'es', 'fr')),
-    city_of_residence VARCHAR(100),
-    phone_number VARCHAR(20) UNIQUE NOT NULL CHECK (phone_number ~ '^\+[1-9]\d{1,14}$'),
-    notification_time_zone VARCHAR(50) NOT NULL CHECK (
-        notification_time_zone IN (
-            'America/New_York',
-            'America/Los_Angeles',
-            'America/Chicago'
-        )
-    ),
-    daily_notification_time TIME,
-    unit_preference VARCHAR(10) CHECK (unit_preference IN ('imperial', 'metric')),
-    is_active BOOLEAN DEFAULT true,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    city_of_residence VARCHAR(100) REFERENCES Cities(city_name) ON DELETE
+    SET
+        NULL,
+        phone_number VARCHAR(20) UNIQUE NOT NULL CHECK (phone_number ~ '^\+[1-9]\d{1,14}$'),
+        notification_time_zone VARCHAR(50) NOT NULL CHECK (
+            notification_time_zone IN (
+                'America/New_York',
+                'America/Los_Angeles',
+                'America/Chicago'
+            )
+        ),
+        daily_notification_time TIME,
+        unit_preference VARCHAR(10) CHECK (unit_preference IN ('imperial', 'metric')),
+        is_active BOOLEAN DEFAULT true,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Cities table
@@ -52,16 +54,20 @@ CREATE TABLE User_Cities (
 CREATE TABLE CityWeather (
     city_id INTEGER PRIMARY KEY REFERENCES Cities(city_id) ON DELETE CASCADE,
     weather_description TEXT NOT NULL,
-    temperature DECIMAL(5, 2) NOT NULL CHECK (
-        temperature BETWEEN -100
+    min_temperature DECIMAL(5, 2) NOT NULL CHECK (
+        min_temperature BETWEEN -100
         AND 150
     ),
-    feels_like_temp DECIMAL(5, 2) NOT NULL CHECK (
-        feels_like_temp BETWEEN -100
-        AND 150
+    max_temperature DECIMAL(5, 2) NOT NULL CHECK (
+        max_temperature BETWEEN -90
+        AND 60
     ),
-    humidity INTEGER NOT NULL CHECK (
-        humidity BETWEEN 0
+    apparent_temperature DECIMAL(5, 2) NOT NULL CHECK (
+        apparent_temperature BETWEEN -90
+        AND 60
+    ),
+    relative_humidity INTEGER NOT NULL CHECK (
+        relative_humidity BETWEEN 0
         AND 100
     ),
     cloud_coverage INTEGER NOT NULL CHECK (
@@ -74,7 +80,7 @@ CREATE TABLE CityWeather (
 -- NotificationPreferences table
 CREATE TABLE NotificationPreferences (
     preference_id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES Users(user_id) ON DELETE CASCADE,
+    user_id INTEGER REFERENCES Users(user_id) ON DELETE CASCADE UNIQUE,
     daily_fullmoon BOOLEAN DEFAULT false,
     daily_nasa BOOLEAN DEFAULT false,
     daily_weather_outfit BOOLEAN DEFAULT true,
