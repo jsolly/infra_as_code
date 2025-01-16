@@ -1,21 +1,23 @@
--- Common types and domains
-CREATE DOMAIN timezone_type AS VARCHAR(50) CHECK (
-    VALUE IN (
-        'America/New_York',
-        'America/Los_Angeles',
-        'America/Chicago'
-    )
-);
-
-CREATE DOMAIN city_name_type AS VARCHAR(100) CHECK (VALUE IN ('New York', 'Los Angeles', 'Chicago'));
-
-CREATE DOMAIN country_type AS VARCHAR(100) CHECK (VALUE IN ('United States', 'Canada'));
-
+/*==============================================================*/
+/* DOMAINS & CUSTOM TYPES                                        */
+/*==============================================================*/
+-- Temperatures are in Celsius (Convert to Fahrenheit during runtime/client/display if needed)
+-- Approximately -49°F to 122°F (Don't expect temperatures outside of this range!)
 CREATE DOMAIN temperature_type AS DECIMAL(5, 2) CHECK (VALUE BETWEEN -45 AND 50);
 
 CREATE DOMAIN percentage_type AS INTEGER CHECK (VALUE BETWEEN 0 AND 100);
 
-CREATE DOMAIN language_type AS VARCHAR(50) CHECK (VALUE IN ('en', 'es', 'fr'));
+CREATE DOMAIN language_type AS VARCHAR(5) CHECK (
+    VALUE IN (
+        'en',
+        'es',
+        'fr',
+        'en-US',
+        'en-CA',
+        'es-US',
+        'fr-CA'
+    )
+);
 
 CREATE DOMAIN unit_type AS VARCHAR(10) CHECK (VALUE IN ('imperial', 'metric'));
 
@@ -23,23 +25,66 @@ CREATE DOMAIN delivery_status_type AS VARCHAR(20) CHECK (
     VALUE IN ('pending', 'sent', 'failed', 'delivered')
 );
 
--- Common columns
-CREATE OR REPLACE FUNCTION create_timestamp_columns () RETURNS void AS $$ BEGIN EXECUTE 'ALTER TABLE ' || TG_TABLE_NAME || ' 
-    ADD COLUMN created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    ADD COLUMN updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP';
+/*==============================================================*/
+/* REFERENCE & SUPPORT TABLES                                    */
+/*==============================================================*/
+CREATE TABLE SupportedTimezones (
+    timezone_id SERIAL PRIMARY KEY,
+    timezone_name VARCHAR(50) NOT NULL UNIQUE CHECK (timezone_name ~ '^[A-Za-z]+/[A-Za-z_]+$'),
+    display_name VARCHAR(100) NOT NULL,
+    utc_offset INTERVAL NOT NULL,
+    is_active BOOLEAN DEFAULT true,
+    CONSTRAINT valid_timezone CHECK (NOW() AT TIME ZONE timezone_name IS NOT NULL)
+);
 
-END;
+SELECT
+    create_timestamp_columns ();
 
-$$ LANGUAGE plpgsql;
+CREATE TABLE SupportedCountries (
+    country_code CHAR(2) PRIMARY KEY,
+    country_name VARCHAR(100) NOT NULL,
+    is_active BOOLEAN DEFAULT true
+);
 
--- Tables with common types
+SELECT
+    create_timestamp_columns ();
+
+CREATE TABLE SupportedCities (
+    city_id SERIAL PRIMARY KEY,
+    city_name VARCHAR(100) NOT NULL,
+    country_code CHAR(2) REFERENCES SupportedCountries (country_code),
+    is_active BOOLEAN DEFAULT true,
+    UNIQUE (city_name, country_code)
+);
+
+SELECT
+    create_timestamp_columns ();
+
+-- Indexes for support tables
+CREATE INDEX idx_supported_timezones_active ON SupportedTimezones (is_active)
+WHERE
+    is_active = true;
+
+CREATE INDEX idx_supported_cities_country ON SupportedCities (country_code);
+
+CREATE INDEX idx_supported_cities_active ON SupportedCities (is_active)
+WHERE
+    is_active = true;
+
+CREATE INDEX idx_supported_countries_active ON SupportedCountries (is_active)
+WHERE
+    is_active = true;
+
+/*==============================================================*/
+/* CORE APPLICATION TABLES                                       */
+/*==============================================================*/
 CREATE TABLE Users (
     user_id SERIAL PRIMARY KEY,
     preferred_name VARCHAR(100),
     preferred_language language_type NOT NULL DEFAULT 'en',
     city_of_residence INTEGER REFERENCES Cities (city_id) ON DELETE SET NULL,
     phone_number VARCHAR(20) UNIQUE NOT NULL CHECK (phone_number ~ '^\+[1-9]\d{1,14}$'),
-    notification_time_zone timezone_type NOT NULL,
+    notification_timezone_id INTEGER NOT NULL REFERENCES SupportedTimezones (timezone_id),
     daily_notification_time TIME NOT NULL,
     unit_preference unit_type NOT NULL DEFAULT 'metric',
     is_active BOOLEAN NOT NULL DEFAULT true
@@ -48,9 +93,10 @@ CREATE TABLE Users (
 SELECT
     create_timestamp_columns ();
 
+-- Cities table
 CREATE TABLE Cities (
     city_id SERIAL PRIMARY KEY,
-    city_name city_name_type NOT NULL UNIQUE,
+    supported_city_id INTEGER NOT NULL REFERENCES SupportedCities (city_id),
     latitude DECIMAL(10, 8) NOT NULL CHECK (
         latitude >= -90
         AND latitude <= 90
@@ -59,8 +105,8 @@ CREATE TABLE Cities (
         longitude >= -180
         AND longitude <= 180
     ),
-    time_zone timezone_type NOT NULL,
-    country country_type NOT NULL
+    timezone_id INTEGER NOT NULL REFERENCES SupportedTimezones (timezone_id),
+    country_code CHAR(2) NOT NULL REFERENCES SupportedCountries (country_code)
 );
 
 SELECT
@@ -117,13 +163,27 @@ CREATE TABLE Notifications_Log (
 SELECT
     create_timestamp_columns ();
 
--- Add after all table creation statements
+/*==============================================================*/
+/* INDEXES                                                       */
+/*==============================================================*/
+-- Index for querying users by phone number
 CREATE INDEX idx_users_phone ON Users (phone_number);
 
+-- Index for querying city weather by city ID
 CREATE INDEX idx_cityweather_updated ON CityWeather (updated_at);
 
+-- Index for querying notifications by notification time
 CREATE INDEX idx_notifications_log_time ON Notifications_Log (notification_time);
 
+-- Index for querying notification preferences by user ID
+CREATE INDEX idx_notification_prefs_user ON NotificationPreferences (user_id);
+
+-- Index for querying notifications by delivery status and notification time
+CREATE INDEX idx_notifications_status_time ON Notifications_Log (delivery_status, notification_time);
+
+/*==============================================================*/
+/* TRIGGERS & FUNCTIONS                                          */
+/*==============================================================*/
 -- Single trigger function for all tables
 CREATE OR REPLACE FUNCTION update_updated_at_column () RETURNS TRIGGER AS $$
 BEGIN 
@@ -153,3 +213,33 @@ UPDATE ON Notifications_Log FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column ();
 
 CREATE INDEX idx_notification_preferences_user ON NotificationPreferences (user_id);
+
+-- Add triggers for the new tables
+CREATE TRIGGER update_supported_countries_updated_at BEFORE
+UPDATE ON SupportedCountries FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column ();
+
+CREATE TRIGGER update_supported_cities_updated_at BEFORE
+UPDATE ON SupportedCities FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column ();
+
+-- Add indexes for the new tables
+CREATE INDEX idx_supported_cities_country ON SupportedCities (country_code);
+
+CREATE INDEX idx_supported_cities_active ON SupportedCities (is_active)
+WHERE
+    is_active = true;
+
+CREATE INDEX idx_supported_countries_active ON SupportedCountries (is_active)
+WHERE
+    is_active = true;
+
+-- Update Cities table to reference SupportedTimezones
+ALTER TABLE Cities
+DROP COLUMN time_zone,
+ADD COLUMN timezone_id INTEGER NOT NULL REFERENCES SupportedTimezones (timezone_id);
+
+-- Update Users table to reference SupportedTimezones
+ALTER TABLE Users
+DROP COLUMN notification_time_zone,
+ADD COLUMN notification_timezone_id INTEGER NOT NULL REFERENCES SupportedTimezones (timezone_id);
