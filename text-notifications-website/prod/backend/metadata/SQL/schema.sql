@@ -86,10 +86,9 @@ CREATE TABLE Cities (
 
 -- User_Cities join table
 CREATE TABLE User_Cities (
-    user_city_id UUID PRIMARY KEY DEFAULT uuid_generate_v4 (),
     user_id UUID NOT NULL REFERENCES Users (user_id) ON DELETE CASCADE,
     city_id UUID NOT NULL REFERENCES Cities (city_id) ON DELETE CASCADE,
-    CONSTRAINT user_city_unique UNIQUE (user_id, city_id) -- Prevent duplicate user-city pairs
+    PRIMARY KEY (user_id, city_id) -- There can only be one user-city pair (Composite key)
 );
 
 -- CityWeather table
@@ -132,22 +131,13 @@ CREATE TABLE Notifications_Log (
 /*==============================================================*/
 /* INDEXES                                                       */
 /*==============================================================*/
--- When querying users by phone number
+-- For querying users by phone number
 CREATE INDEX idx_users_phone ON Users (phone_number);
 
--- When querying city weather by weather_report_date
-CREATE INDEX idx_cityweather_date ON CityWeather (weather_report_date);
-
--- When querying notifications by notification_time
-CREATE INDEX idx_notifications_log_time ON Notifications_Log (notification_time);
-
--- When querying notifications by delivery_status and notification_time
-CREATE INDEX idx_notifications_status_time ON Notifications_Log (delivery_status, notification_time);
-
--- Add index on foreign keys
-CREATE INDEX idx_user_cities_user_id ON User_Cities (user_id);
-
-CREATE INDEX idx_user_cities_city_id ON User_Cities (city_id);
+-- For querying active users
+CREATE INDEX idx_users_active ON Users (user_id)
+WHERE
+    is_active = true;
 
 /*==============================================================*/
 /* TRIGGERS & FUNCTIONS                                          */
