@@ -30,7 +30,9 @@ CREATE DOMAIN delivery_status_type AS VARCHAR(20) CHECK (
 /*==============================================================*/
 CREATE TABLE SupportedTimezones (
     timezone_id SERIAL PRIMARY KEY,
-    timezone_name VARCHAR(50) NOT NULL UNIQUE CHECK (timezone_name ~ '^[A-Za-z]+/[A-Za-z0-9/_-]+$'),
+    timezone_name VARCHAR(50) NOT NULL UNIQUE CHECK (
+        timezone_name ~ '^(Africa|America|Antarctica|Asia|Atlantic|Australia|Europe|Indian|Pacific)/[A-Za-z0-9/_-]+$'
+    ),
     display_name VARCHAR(100) NOT NULL,
     utc_offset INTERVAL NOT NULL,
     CONSTRAINT valid_timezone CHECK (NOW() AT TIME ZONE timezone_name IS NOT NULL)
