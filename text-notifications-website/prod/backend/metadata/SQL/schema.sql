@@ -30,10 +30,9 @@ CREATE DOMAIN delivery_status_type AS VARCHAR(20) CHECK (
 /*==============================================================*/
 CREATE TABLE SupportedTimezones (
     timezone_id SERIAL PRIMARY KEY,
-    timezone_name VARCHAR(50) NOT NULL UNIQUE CHECK (timezone_name ~ '^[A-Za-z]+/[A-Za-z_]+$'),
+    timezone_name VARCHAR(50) NOT NULL UNIQUE CHECK (timezone_name ~ '^[A-Za-z]+/[A-Za-z0-9/_-]+$'),
     display_name VARCHAR(100) NOT NULL,
     utc_offset INTERVAL NOT NULL,
-    is_active BOOLEAN DEFAULT true,
     CONSTRAINT valid_timezone CHECK (NOW() AT TIME ZONE timezone_name IS NOT NULL)
 );
 
@@ -42,8 +41,7 @@ SELECT
 
 CREATE TABLE SupportedCountries (
     country_code CHAR(2) PRIMARY KEY,
-    country_name VARCHAR(100) NOT NULL,
-    is_active BOOLEAN DEFAULT true
+    country_name VARCHAR(100) NOT NULL
 );
 
 SELECT
@@ -53,27 +51,11 @@ CREATE TABLE SupportedCities (
     city_id SERIAL PRIMARY KEY,
     city_name VARCHAR(100) NOT NULL,
     country_code CHAR(2) REFERENCES SupportedCountries (country_code),
-    is_active BOOLEAN DEFAULT true,
     UNIQUE (city_name, country_code)
 );
 
 SELECT
     create_timestamp_columns ();
-
--- Indexes for support tables
-CREATE INDEX idx_supported_timezones_active ON SupportedTimezones (is_active)
-WHERE
-    is_active = true;
-
-CREATE INDEX idx_supported_cities_country ON SupportedCities (country_code);
-
-CREATE INDEX idx_supported_cities_active ON SupportedCities (is_active)
-WHERE
-    is_active = true;
-
-CREATE INDEX idx_supported_countries_active ON SupportedCountries (is_active)
-WHERE
-    is_active = true;
 
 /*==============================================================*/
 /* CORE APPLICATION TABLES                                       */
@@ -83,7 +65,11 @@ CREATE TABLE Users (
     preferred_name VARCHAR(100),
     preferred_language language_type NOT NULL DEFAULT 'en',
     city_of_residence INTEGER REFERENCES Cities (city_id) ON DELETE SET NULL,
-    phone_number VARCHAR(20) UNIQUE NOT NULL CHECK (phone_number ~ '^\+[1-9]\d{1,14}$'),
+    phone_number VARCHAR(20) UNIQUE NOT NULL CHECK (
+        phone_number ~ '^\+[1-9]\d{6,14}$'
+        AND -- Minimum 7 digits, maximum 15 digits
+        length(phone_number) <= 16 -- Total length including '+' sign
+    ),
     notification_timezone_id INTEGER NOT NULL REFERENCES SupportedTimezones (timezone_id),
     daily_notification_time TIME NOT NULL,
     unit_preference unit_type NOT NULL DEFAULT 'metric',
@@ -163,28 +149,40 @@ CREATE TABLE Notifications_Log (
 SELECT
     create_timestamp_columns ();
 
+-- Update table structures to use support tables
+ALTER TABLE Cities
+DROP COLUMN time_zone,
+ADD COLUMN timezone_id INTEGER NOT NULL REFERENCES SupportedTimezones (timezone_id);
+
+ALTER TABLE Users
+DROP COLUMN notification_time_zone,
+ADD COLUMN notification_timezone_id INTEGER NOT NULL REFERENCES SupportedTimezones (timezone_id);
+
 /*==============================================================*/
 /* INDEXES                                                       */
 /*==============================================================*/
--- Index for querying users by phone number
+-- When querying users by phone number
 CREATE INDEX idx_users_phone ON Users (phone_number);
 
--- Index for querying city weather by city ID
+-- When querying city weather by updated_at
 CREATE INDEX idx_cityweather_updated ON CityWeather (updated_at);
 
--- Index for querying notifications by notification time
+-- When querying notifications by notification_time
 CREATE INDEX idx_notifications_log_time ON Notifications_Log (notification_time);
 
--- Index for querying notification preferences by user ID
+-- When querying notification preferences by user_id
 CREATE INDEX idx_notification_prefs_user ON NotificationPreferences (user_id);
 
--- Index for querying notifications by delivery status and notification time
+-- When querying notifications by delivery_status and notification_time
 CREATE INDEX idx_notifications_status_time ON Notifications_Log (delivery_status, notification_time);
+
+-- When querying notification preferences by user_id
+CREATE INDEX idx_notification_preferences_user ON NotificationPreferences (user_id);
 
 /*==============================================================*/
 /* TRIGGERS & FUNCTIONS                                          */
 /*==============================================================*/
--- Single trigger function for all tables
+-- Single trigger function for all tables that need to update the updated_at column
 CREATE OR REPLACE FUNCTION update_updated_at_column () RETURNS TRIGGER AS $$
 BEGIN 
     NEW.updated_at = CURRENT_TIMESTAMP;
@@ -212,9 +210,6 @@ CREATE TRIGGER update_notifications_log_updated_at BEFORE
 UPDATE ON Notifications_Log FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column ();
 
-CREATE INDEX idx_notification_preferences_user ON NotificationPreferences (user_id);
-
--- Add triggers for the new tables
 CREATE TRIGGER update_supported_countries_updated_at BEFORE
 UPDATE ON SupportedCountries FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column ();
@@ -222,24 +217,3 @@ EXECUTE FUNCTION update_updated_at_column ();
 CREATE TRIGGER update_supported_cities_updated_at BEFORE
 UPDATE ON SupportedCities FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column ();
-
--- Add indexes for the new tables
-CREATE INDEX idx_supported_cities_country ON SupportedCities (country_code);
-
-CREATE INDEX idx_supported_cities_active ON SupportedCities (is_active)
-WHERE
-    is_active = true;
-
-CREATE INDEX idx_supported_countries_active ON SupportedCountries (is_active)
-WHERE
-    is_active = true;
-
--- Update Cities table to reference SupportedTimezones
-ALTER TABLE Cities
-DROP COLUMN time_zone,
-ADD COLUMN timezone_id INTEGER NOT NULL REFERENCES SupportedTimezones (timezone_id);
-
--- Update Users table to reference SupportedTimezones
-ALTER TABLE Users
-DROP COLUMN notification_time_zone,
-ADD COLUMN notification_timezone_id INTEGER NOT NULL REFERENCES SupportedTimezones (timezone_id);
