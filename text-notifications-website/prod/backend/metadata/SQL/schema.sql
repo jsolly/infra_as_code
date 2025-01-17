@@ -48,7 +48,7 @@ SELECT
 
 CREATE TABLE SupportedCountries (
     country_code CHAR(2) PRIMARY KEY,
-    country_name VARCHAR(100) NOT NULL,
+    country_name VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE SupportedCities (
