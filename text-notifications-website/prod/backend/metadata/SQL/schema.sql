@@ -7,17 +7,7 @@ CREATE DOMAIN temperature_type AS DECIMAL(5, 2) CHECK (VALUE BETWEEN -45 AND 50)
 
 CREATE DOMAIN percentage_type AS INTEGER CHECK (VALUE BETWEEN 0 AND 100);
 
-CREATE DOMAIN language_type AS VARCHAR(5) CHECK (
-    VALUE IN (
-        'en',
-        'es',
-        'fr',
-        'en-US',
-        'en-CA',
-        'es-US',
-        'fr-CA'
-    )
-);
+CREATE DOMAIN language_type AS VARCHAR(5) CHECK (VALUE IN ('en', 'es', 'fr'));
 
 CREATE DOMAIN unit_type AS VARCHAR(10) CHECK (VALUE IN ('imperial', 'metric'));
 
