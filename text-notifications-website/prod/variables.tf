@@ -68,3 +68,13 @@ variable "neon_api_key" {
   type        = string
   sensitive   = true
 }
+
+variable "neon_project_name" {
+  description = "Neon Project Name"
+  type        = string
+}
+
+variable "neon_database_name" {
+  description = "Neon Database Name"
+  type        = string
+}

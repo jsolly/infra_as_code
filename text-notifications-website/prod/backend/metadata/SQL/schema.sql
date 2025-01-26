@@ -17,7 +17,6 @@ CREATE DOMAIN delivery_status_type AS VARCHAR(20) CHECK (
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Add timezone validation domain
 CREATE DOMAIN timezone_type AS TEXT CHECK (
     EXISTS (
         SELECT
@@ -32,7 +31,6 @@ CREATE DOMAIN timezone_type AS TEXT CHECK (
 /*==============================================================*/
 /* REFERENCE & SUPPORT TABLES                                    */
 /*==============================================================*/
--- Move function call before table creation
 SELECT
     create_timestamp_columns ();
 
