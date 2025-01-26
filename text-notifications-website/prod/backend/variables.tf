@@ -39,12 +39,6 @@ variable "twilio_target_phone_number" {
   sensitive   = true
 }
 
-variable "aws_region" {
-  type        = string
-  description = "AWS Region"
-  default     = "us-east-1"
-}
-
 variable "neon_api_key" {
   type        = string
   description = "Neon API Key"
