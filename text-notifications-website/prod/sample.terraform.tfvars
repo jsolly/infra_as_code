@@ -2,11 +2,11 @@
 aws_region = "us-east-1"
 
 # Frontend configuration
+cloudflare_api_token             = "<cloudflare_api_token>"
+cloudflare_zone_id               = "<cloudflare_zone_id>"
 domain_name                      = "example.com"
 website_bucket_name              = "example-website"
 google_search_console_txt_record = "\"google-site-verification=<verification_code>\""
-cloudflare_api_token             = "<cloudflare_api_token>"
-cloudflare_zone_id               = "<cloudflare_zone_id>"
 environment                      = "prod"
 
 
