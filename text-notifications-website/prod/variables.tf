@@ -62,3 +62,19 @@ variable "twilio_target_phone_number" {
   description = "Target phone number"
   type        = string
 }
+
+variable "neon_api_key" {
+  description = "Neon API Key"
+  type        = string
+  sensitive   = true
+}
+
+variable "neon_project_name" {
+  description = "Neon Project Name"
+  type        = string
+}
+
+variable "neon_database_name" {
+  description = "Neon Database Name"
+  type        = string
+}
