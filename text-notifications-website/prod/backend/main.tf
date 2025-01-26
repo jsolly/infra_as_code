@@ -10,6 +10,15 @@ module "metadata-nosql" {
   environment         = var.environment
 }
 
+module "metadata-sql" {
+  source              = "./metadata/SQL"
+  website_bucket_name = var.website_bucket_name
+  environment         = var.environment
+  neon_api_key        = var.neon_api_key
+  neon_project_name   = var.neon_project_name
+  neon_database_name  = var.neon_database_name
+}
+
 module "functions" {
   source                         = "./functions"
   website_bucket_name            = var.website_bucket_name

@@ -38,3 +38,25 @@ variable "twilio_target_phone_number" {
   description = "Twilio target phone number"
   sensitive   = true
 }
+
+variable "aws_region" {
+  type        = string
+  description = "AWS Region"
+  default     = "us-east-1"
+}
+
+variable "neon_api_key" {
+  type        = string
+  description = "Neon API Key"
+  sensitive   = true
+}
+
+variable "neon_project_name" {
+  type        = string
+  description = "Neon Project Name"
+}
+
+variable "neon_database_name" {
+  type        = string
+  description = "Neon Database Name"
+}
