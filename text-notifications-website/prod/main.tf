@@ -45,8 +45,8 @@ module "backend" {
 }
 
 # Frontend configuration
-module "cloudflare" {
-  source                           = "../../modules/static_website/aws_plus_cloudflare/cloudflare"
+module "dns" {
+  source                           = "../../static_website/dns"
   cloudflare_zone_id               = var.cloudflare_zone_id
   domain_name                      = var.domain_name
   website_bucket_name              = var.website_bucket_name
@@ -54,8 +54,8 @@ module "cloudflare" {
   google_search_console_txt_record = var.google_search_console_txt_record
 }
 
-module "website_buckets" {
-  source              = "../../modules/static_website/aws_plus_cloudflare/s3"
+module "website_storage" {
+  source              = "../../static_website/storage"
   website_bucket_name = var.domain_name
   website_config = {
     index_document = "index.html"
