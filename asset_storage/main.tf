@@ -1,9 +1,9 @@
 resource "aws_s3_bucket" "storage_bucket" {
-  bucket        = var.storage_bucket_name
+  bucket        = var.bucket_name
   force_destroy = true
 
   tags = {
-    Name        = var.storage_bucket_name
+    Name        = var.bucket_name
     Environment = var.environment
   }
 }

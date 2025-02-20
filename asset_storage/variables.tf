@@ -11,7 +11,7 @@ variable "environment" {
   default     = "prod"
 }
 
-variable "storage_bucket_name" {
+variable "bucket_name" {
   type        = string
   description = "Name of the storage bucket"
 }
