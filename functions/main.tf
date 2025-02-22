@@ -8,21 +8,14 @@ locals {
   merged_tags = merge(local.default_tags, var.tags)
 }
 
-data "aws_s3_object" "lambda_code" {
-  bucket = var.lambda_code_bucket
-  key    = var.lambda_code_key
-}
-
 resource "aws_lambda_function" "function" {
-  s3_bucket        = var.lambda_code_bucket
-  s3_key           = var.lambda_code_key
-  source_code_hash = data.aws_s3_object.lambda_code.etag
-  function_name    = var.function_name
-  role             = aws_iam_role.lambda_role.arn
-  handler          = var.function_handler
-  runtime          = var.runtime
-  timeout          = var.function_timeout
-  memory_size      = var.function_memory_size
+  function_name = var.function_name
+  role          = aws_iam_role.lambda_role.arn
+  timeout       = var.function_timeout
+  memory_size   = var.function_memory_size
+
+  package_type = "Image"
+  image_uri    = var.image_uri
 
   dynamic "environment" {
     for_each = length(var.environment_variables) > 0 ? [1] : []
@@ -77,4 +70,23 @@ resource "aws_iam_role_policy_attachment" "additional_policies" {
   count      = length(var.additional_policy_arns)
   role       = aws_iam_role.lambda_role.name
   policy_arn = var.additional_policy_arns[count.index]
+}
+
+resource "aws_iam_role_policy" "ecr_access" {
+  name = "${var.function_name}-${var.environment}-ecr-access"
+  role = aws_iam_role.lambda_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchGetImage"
+        ]
+        Resource = [var.ecr_repository_arn]
+      }
+    ]
+  })
 }

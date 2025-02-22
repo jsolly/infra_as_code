@@ -9,28 +9,6 @@ variable "environment" {
   default     = "prod"
 }
 
-variable "lambda_code_bucket" {
-  description = "S3 bucket containing the Lambda deployment package"
-  type        = string
-}
-
-variable "lambda_code_key" {
-  description = "S3 key for the Lambda deployment package"
-  type        = string
-}
-
-variable "function_handler" {
-  description = "Lambda function handler"
-  type        = string
-  default     = "index.handler"
-}
-
-variable "runtime" {
-  description = "Lambda runtime"
-  type        = string
-  default     = "nodejs22.x"
-}
-
 variable "function_timeout" {
   description = "Lambda function timeout in seconds"
   type        = number
@@ -65,4 +43,14 @@ variable "tags" {
   description = "Tags to apply to all resources"
   type        = map(string)
   default     = {}
-} 
+}
+
+variable "image_uri" {
+  description = "The URI of the container image in ECR"
+  type        = string
+}
+
+variable "ecr_repository_arn" {
+  description = "The ARN of the ECR repository containing the function image"
+  type        = string
+}
