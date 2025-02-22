@@ -14,8 +14,9 @@ resource "aws_lambda_function" "function" {
   timeout       = var.function_timeout
   memory_size   = var.function_memory_size
 
-  package_type = "Image"
-  image_uri    = var.image_uri
+  package_type  = "Image"
+  image_uri     = var.image_uri
+  architectures = ["arm64"]
 
   dynamic "environment" {
     for_each = length(var.environment_variables) > 0 ? [1] : []
