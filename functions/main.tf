@@ -101,7 +101,6 @@ resource "aws_apigatewayv2_api" "lambda_api" {
       "https://www.${var.domain_name}",
       "http://${var.domain_name}",
       "http://www.${var.domain_name}",
-      "http://localhost:*"
     ]
     allow_methods = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
     allow_headers = [
