@@ -18,10 +18,6 @@ output "api_endpoint" {
   value       = "${aws_apigatewayv2_api.lambda_api.api_endpoint}${var.api_path}"
 }
 
-output "ecr_repository_url" {
-  description = "The URL of the ECR repository"
-  value       = aws_ecr_repository.function.repository_url
-}
 
 output "ecr_repository_arn" {
   description = "The ARN of the ECR repository"
