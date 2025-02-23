@@ -99,10 +99,8 @@ resource "aws_apigatewayv2_api" "lambda_api" {
     allow_origins = [
       "https://${var.domain_name}",
       "https://www.${var.domain_name}",
-      "http://${var.domain_name}",
-      "http://www.${var.domain_name}",
     ]
-    allow_methods = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    allow_methods = [var.http_method, "OPTIONS"]
     allow_headers = [
       "content-type",
       "x-amz-date",
