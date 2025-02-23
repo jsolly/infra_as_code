@@ -55,9 +55,9 @@ variable "ecr_repository_arn" {
   type        = string
 }
 
-variable "allowed_origin" {
-  description = "The domain name that is allowed to make requests to the Lambda function (e.g., https://example.com)"
+variable "domain_name" {
   type        = string
+  description = "Domain name for CORS configuration (e.g. textnotifications.app)"
 }
 
 variable "api_path" {

@@ -96,7 +96,10 @@ resource "aws_apigatewayv2_api" "lambda_api" {
   name          = "${var.function_name}-${var.environment}-api"
   protocol_type = "HTTP"
   cors_configuration {
-    allow_origins = [var.allowed_origin]
+    allow_origins = [
+      "https://${var.domain_name}",
+      "https://www.${var.domain_name}"
+    ]
     allow_methods = ["POST", "OPTIONS"]
     allow_headers = [
       "content-type",
@@ -104,7 +107,8 @@ resource "aws_apigatewayv2_api" "lambda_api" {
       "authorization",
       "x-api-key",
       "x-amz-security-token",
-      "x-amz-user-agent"
+      "x-amz-user-agent",
+      "origin"
     ]
     expose_headers = [
       "content-type",
