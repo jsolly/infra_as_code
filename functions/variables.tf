@@ -59,3 +59,9 @@ variable "allowed_origin" {
   description = "The domain name that is allowed to make requests to the Lambda function (e.g., https://example.com)"
   type        = string
 }
+
+variable "api_path" {
+  description = "The path for the API endpoint (e.g., /signup)"
+  type        = string
+  default     = "/"
+}

@@ -15,5 +15,5 @@ output "role_arn" {
 
 output "api_endpoint" {
   description = "The HTTP API Gateway endpoint URL"
-  value       = aws_apigatewayv2_api.lambda_api.api_endpoint
+  value       = "${aws_apigatewayv2_api.lambda_api.api_endpoint}${var.api_path}"
 }
