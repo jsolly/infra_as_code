@@ -98,9 +98,12 @@ resource "aws_apigatewayv2_api" "lambda_api" {
   cors_configuration {
     allow_origins = [
       "https://${var.domain_name}",
-      "https://www.${var.domain_name}"
+      "https://www.${var.domain_name}",
+      "http://${var.domain_name}",
+      "http://www.${var.domain_name}",
+      "http://localhost:*"
     ]
-    allow_methods = ["GET", "POST", "OPTIONS"]
+    allow_methods = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
     allow_headers = [
       "content-type",
       "x-amz-date",
@@ -110,16 +113,23 @@ resource "aws_apigatewayv2_api" "lambda_api" {
       "x-amz-user-agent",
       "origin",
       "hx-current-url",
-      "hx-request"
+      "hx-request",
+      "accept",
+      "referer",
+      "sec-fetch-dest",
+      "sec-fetch-mode",
+      "sec-fetch-site"
     ]
     expose_headers = [
       "content-type",
       "content-length",
       "access-control-allow-origin",
       "access-control-allow-methods",
-      "access-control-allow-headers"
+      "access-control-allow-headers",
+      "access-control-expose-headers",
+      "access-control-max-age"
     ]
-    max_age = 300
+    max_age = 7200
   }
 
   tags = local.merged_tags
