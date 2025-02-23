@@ -54,3 +54,8 @@ variable "ecr_repository_arn" {
   description = "The ARN of the ECR repository containing the function image"
   type        = string
 }
+
+variable "allowed_origin" {
+  description = "The domain name that is allowed to make requests to the Lambda function (e.g., https://example.com)"
+  type        = string
+}

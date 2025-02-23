@@ -11,4 +11,9 @@ output "function_name" {
 output "role_arn" {
   description = "The ARN of the IAM role"
   value       = aws_iam_role.lambda_role.arn
-} 
+}
+
+output "api_endpoint" {
+  description = "The HTTP API Gateway endpoint URL"
+  value       = aws_apigatewayv2_api.lambda_api.api_endpoint
+}
