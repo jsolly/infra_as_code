@@ -100,7 +100,7 @@ resource "aws_apigatewayv2_api" "lambda_api" {
       "https://${var.domain_name}",
       "https://www.${var.domain_name}"
     ]
-    allow_methods = ["POST", "OPTIONS"]
+    allow_methods = ["GET", "POST", "OPTIONS"]
     allow_headers = [
       "content-type",
       "x-amz-date",
@@ -108,11 +108,16 @@ resource "aws_apigatewayv2_api" "lambda_api" {
       "x-api-key",
       "x-amz-security-token",
       "x-amz-user-agent",
-      "origin"
+      "origin",
+      "hx-current-url",
+      "hx-request"
     ]
     expose_headers = [
       "content-type",
-      "content-length"
+      "content-length",
+      "access-control-allow-origin",
+      "access-control-allow-methods",
+      "access-control-allow-headers"
     ]
     max_age = 300
   }
@@ -138,7 +143,7 @@ resource "aws_apigatewayv2_integration" "lambda_integration" {
 
 resource "aws_apigatewayv2_route" "lambda_route" {
   api_id    = aws_apigatewayv2_api.lambda_api.id
-  route_key = "POST ${var.api_path}"
+  route_key = "ANY ${var.api_path}"
   target    = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
 }
 
@@ -147,5 +152,5 @@ resource "aws_lambda_permission" "api_gw" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.function.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_apigatewayv2_api.lambda_api.execution_arn}/$default/POST${var.api_path}"
+  source_arn    = "${aws_apigatewayv2_api.lambda_api.execution_arn}/$default/*${var.api_path}"
 }
