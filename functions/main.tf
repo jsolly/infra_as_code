@@ -19,11 +19,13 @@ resource "aws_lambda_function" "function" {
   image_uri     = var.image_uri
   architectures = ["arm64"]
 
-  dynamic "environment" {
-    for_each = length(var.environment_variables) > 0 ? [1] : []
-    content {
-      variables = var.environment_variables
-    }
+  environment {
+    variables = merge(
+      var.environment_variables,
+      {
+        TURNSTILE_SECRET_KEY = var.turnstile_secret_key
+      }
+    )
   }
 
   tags = local.merged_tags

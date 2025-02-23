@@ -65,3 +65,9 @@ variable "http_method" {
   type        = string
   default     = "POST"
 }
+
+variable "turnstile_secret_key" {
+  description = "Cloudflare Turnstile secret key"
+  type        = string
+  sensitive   = true
+}
