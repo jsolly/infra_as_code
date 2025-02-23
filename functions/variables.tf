@@ -44,11 +44,6 @@ variable "image_uri" {
   type        = string
 }
 
-variable "ecr_repository_arn" {
-  description = "The ARN of the ECR repository containing the function image"
-  type        = string
-}
-
 variable "domain_name" {
   type        = string
   description = "Domain name for CORS configuration (e.g. textnotifications.app)"
