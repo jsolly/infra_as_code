@@ -5,7 +5,43 @@ locals {
     Name        = var.function_name
     Environment = var.environment
   }
-  merged_tags = merge(local.default_tags, var.tags)
+  merged_tags         = merge(local.default_tags, var.tags)
+  ecr_repository_name = var.function_name
+}
+
+# Create ECR repository for the Lambda function
+resource "aws_ecr_repository" "function" {
+  name                 = local.ecr_repository_name
+  image_tag_mutability = "MUTABLE"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  force_delete = true
+
+  tags = local.merged_tags
+}
+
+# Add lifecycle policy to clean up old images
+resource "aws_ecr_lifecycle_policy" "function" {
+  repository = aws_ecr_repository.function.name
+
+  policy = jsonencode({
+    rules = [{
+      rulePriority = 1
+      description  = "Keep last 10 tagged images"
+      selection = {
+        tagStatus     = "tagged"
+        tagPrefixList = ["v", "sha"]
+        countType     = "imageCountMoreThan"
+        countNumber   = 10
+      }
+      action = {
+        type = "expire"
+      }
+    }]
+  })
 }
 
 # Create the Lambda function with container image configuration
@@ -85,7 +121,7 @@ resource "aws_iam_role_policy" "ecr_access" {
           "ecr:GetDownloadUrlForLayer",
           "ecr:BatchGetImage"
         ]
-        Resource = [var.ecr_repository_arn]
+        Resource = [aws_ecr_repository.function.arn]
       }
     ]
   })
