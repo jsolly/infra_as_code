@@ -27,12 +27,6 @@ variable "environment_variables" {
   default     = {}
 }
 
-variable "additional_policy_arns" {
-  description = "List of additional IAM policy ARNs to attach to the Lambda role"
-  type        = list(string)
-  default     = []
-}
-
 variable "s3_access_arns" {
   description = "List of S3 bucket ARNs the Lambda needs read access to"
   type        = list(string)
@@ -64,4 +58,10 @@ variable "api_path" {
   description = "The path for the API endpoint (e.g., /signup)"
   type        = string
   default     = "/"
+}
+
+variable "http_method" {
+  description = "The HTTP method the Lambda function should respond to (e.g., GET, POST, PUT, DELETE)"
+  type        = string
+  default     = "POST"
 }

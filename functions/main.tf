@@ -8,6 +8,7 @@ locals {
   merged_tags = merge(local.default_tags, var.tags)
 }
 
+# Create the Lambda function with container image configuration
 resource "aws_lambda_function" "function" {
   function_name = var.function_name
   role          = aws_iam_role.lambda_role.arn
@@ -28,6 +29,7 @@ resource "aws_lambda_function" "function" {
   tags = local.merged_tags
 }
 
+# Create IAM role for Lambda execution
 resource "aws_iam_role" "lambda_role" {
   name = local.role_name
 
@@ -45,11 +47,13 @@ resource "aws_iam_role" "lambda_role" {
   tags = local.merged_tags
 }
 
+# Attach basic Lambda execution policy to the IAM role
 resource "aws_iam_role_policy_attachment" "lambda_basic" {
   role       = aws_iam_role.lambda_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+# Create S3 access policy for Lambda if S3 access is required
 resource "aws_iam_role_policy" "s3_access" {
   count = length(var.s3_access_arns) > 0 ? 1 : 0
   name  = local.s3_policy_name
@@ -67,12 +71,7 @@ resource "aws_iam_role_policy" "s3_access" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "additional_policies" {
-  count      = length(var.additional_policy_arns)
-  role       = aws_iam_role.lambda_role.name
-  policy_arn = var.additional_policy_arns[count.index]
-}
-
+# Create ECR access policy for Lambda to pull container images
 resource "aws_iam_role_policy" "ecr_access" {
   name = "${var.function_name}-${var.environment}-ecr-access"
   role = aws_iam_role.lambda_role.id
@@ -92,6 +91,7 @@ resource "aws_iam_role_policy" "ecr_access" {
   })
 }
 
+# Create HTTP API Gateway with CORS configuration
 resource "aws_apigatewayv2_api" "lambda_api" {
   name          = "${var.function_name}-${var.environment}-api"
   protocol_type = "HTTP"
@@ -134,6 +134,7 @@ resource "aws_apigatewayv2_api" "lambda_api" {
   tags = local.merged_tags
 }
 
+# Create default stage for API Gateway with auto-deploy enabled
 resource "aws_apigatewayv2_stage" "lambda_stage" {
   api_id      = aws_apigatewayv2_api.lambda_api.id
   name        = "$default"
@@ -142,6 +143,7 @@ resource "aws_apigatewayv2_stage" "lambda_stage" {
   tags = local.merged_tags
 }
 
+# Configure integration between API Gateway and Lambda function (The Gateway invokes the Lambda function via POST)
 resource "aws_apigatewayv2_integration" "lambda_integration" {
   api_id = aws_apigatewayv2_api.lambda_api.id
 
@@ -150,12 +152,14 @@ resource "aws_apigatewayv2_integration" "lambda_integration" {
   integration_method = "POST"
 }
 
+# Define API route for the Lambda function
 resource "aws_apigatewayv2_route" "lambda_route" {
   api_id    = aws_apigatewayv2_api.lambda_api.id
-  route_key = "ANY ${var.api_path}"
+  route_key = "${var.http_method} ${var.api_path}" # e.g. POST /signup
   target    = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
 }
 
+# Grant API Gateway permission to invoke the Lambda function
 resource "aws_lambda_permission" "api_gw" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
