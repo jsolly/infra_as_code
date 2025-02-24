@@ -117,7 +117,8 @@ resource "aws_apigatewayv2_api" "lambda_api" {
       "referer",
       "sec-fetch-dest",
       "sec-fetch-mode",
-      "sec-fetch-site"
+      "sec-fetch-site",
+      "cf-turnstile-response"
     ]
     expose_headers = [
       "content-type",
