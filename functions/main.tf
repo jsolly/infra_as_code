@@ -104,25 +104,41 @@ resource "aws_apigatewayv2_api" "lambda_api" {
     ]
     allow_methods = [var.http_method, "OPTIONS"]
     allow_headers = [
+      # Standard HTTP headers
+      "accept",
+      "accept-encoding",
+      "accept-language",
       "content-type",
-      "x-amz-date",
-      "authorization",
-      "x-api-key",
-      "x-amz-security-token",
-      "x-amz-user-agent",
+      "content-length",
+
+      # Cache control
+      "cache-control",
+      "pragma",
+
+      # Security and authentication
       "origin",
+      "cf-turnstile-response",
+
+      # HTMX specific headers
       "hx-current-url",
       "hx-request",
-      "accept",
+
+      # Browser security and context headers
       "referer",
       "sec-fetch-dest",
       "sec-fetch-mode",
       "sec-fetch-site",
-      "cf-turnstile-response"
+      "sec-ch-ua",
+      "sec-ch-ua-mobile",
+      "sec-ch-ua-platform",
+      "sec-gpc"
     ]
     expose_headers = [
+      # Standard HTTP headers
       "content-type",
       "content-length",
+
+      # CORS response headers
       "access-control-allow-origin",
       "access-control-allow-methods",
       "access-control-allow-headers",
