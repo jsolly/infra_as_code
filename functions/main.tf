@@ -116,12 +116,22 @@ resource "aws_apigatewayv2_api" "lambda_api" {
       "pragma",
 
       # Security and authentication
+      "authorization",
+      "x-api-key",
       "origin",
       "cf-turnstile-response",
+
+      # AWS specific headers
+      "x-amz-date",
+      "x-amz-security-token",
+      "x-amz-user-agent",
 
       # HTMX specific headers
       "hx-current-url",
       "hx-request",
+      "hx-trigger",
+      "hx-target",
+      "hx-swap",
 
       # Browser security and context headers
       "referer",
@@ -137,6 +147,7 @@ resource "aws_apigatewayv2_api" "lambda_api" {
       # Standard HTTP headers
       "content-type",
       "content-length",
+
 
       # CORS response headers
       "access-control-allow-origin",
@@ -173,6 +184,13 @@ resource "aws_apigatewayv2_integration" "lambda_integration" {
 resource "aws_apigatewayv2_route" "lambda_route" {
   api_id    = aws_apigatewayv2_api.lambda_api.id
   route_key = "${var.http_method} ${var.api_path}" # e.g. POST /signup
+  target    = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
+}
+
+# Define OPTIONS route for preflight requests
+resource "aws_apigatewayv2_route" "options_route" {
+  api_id    = aws_apigatewayv2_api.lambda_api.id
+  route_key = "OPTIONS ${var.api_path}"
   target    = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
 }
 
