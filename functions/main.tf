@@ -187,32 +187,11 @@ resource "aws_apigatewayv2_route" "lambda_route" {
   target    = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
 }
 
-# Create a mock integration for OPTIONS requests
-resource "aws_apigatewayv2_integration" "options_integration" {
-  api_id             = aws_apigatewayv2_api.lambda_api.id
-  integration_type   = "MOCK"
-  integration_method = "OPTIONS"
-
-  template_selection_expression = "$request.method"
-
-  request_templates = {
-    "OPTIONS" = jsonencode({
-      statusCode = 200,
-      headers = {
-        "Access-Control-Allow-Origin"  = "https://www.${var.domain_name}",
-        "Access-Control-Allow-Methods" = "OPTIONS,${var.http_method}",
-        "Access-Control-Allow-Headers" = "accept,accept-encoding,accept-language,authorization,cache-control,cf-turnstile-response,content-length,content-type,hx-current-url,hx-request,hx-swap,hx-target,hx-trigger,origin,pragma,referer,sec-ch-ua,sec-ch-ua-mobile,sec-ch-ua-platform,sec-fetch-dest,sec-fetch-mode,sec-fetch-site,sec-gpc,x-amz-date,x-amz-security-token,x-amz-user-agent,x-api-key",
-        "Access-Control-Max-Age"       = "7200"
-      }
-    })
-  }
-}
-
-# Define OPTIONS route for preflight requests with mock integration
+# Define OPTIONS route for preflight requests
+# This will be automatically handled by API Gateway's CORS configuration
 resource "aws_apigatewayv2_route" "options_route" {
   api_id    = aws_apigatewayv2_api.lambda_api.id
   route_key = "OPTIONS ${var.api_path}"
-  target    = "integrations/${aws_apigatewayv2_integration.options_integration.id}"
 }
 
 # Grant API Gateway permission to invoke the Lambda function
