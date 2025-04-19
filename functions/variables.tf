@@ -66,12 +66,6 @@ variable "http_method" {
   default     = "POST"
 }
 
-variable "turnstile_secret_key" {
-  description = "Cloudflare Turnstile secret key"
-  type        = string
-  sensitive   = true
-}
-
 variable "schedule_expression" {
   description = "Optional cron expression for EventBridge scheduled invocation (e.g., 'cron(0 12 * * ? *)')"
   type        = string
