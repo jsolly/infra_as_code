@@ -202,3 +202,30 @@ resource "aws_lambda_permission" "api_gw" {
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_apigatewayv2_api.lambda_api.execution_arn}/$default/*${var.api_path}"
 }
+
+# Create EventBridge rule for scheduled invocation if schedule expression is provided
+resource "aws_cloudwatch_event_rule" "schedule" {
+  count               = var.schedule_expression != "" ? 1 : 0
+  name                = "${var.function_name}-${var.environment}-schedule"
+  description         = "Schedule for invoking ${var.function_name} Lambda function"
+  schedule_expression = var.schedule_expression
+  tags                = local.merged_tags
+}
+
+# Set Lambda function as target for the EventBridge rule
+resource "aws_cloudwatch_event_target" "lambda_target" {
+  count     = var.schedule_expression != "" ? 1 : 0
+  rule      = aws_cloudwatch_event_rule.schedule[0].name
+  target_id = "${var.function_name}-target"
+  arn       = aws_lambda_function.function.arn
+}
+
+# Grant EventBridge permission to invoke the Lambda function
+resource "aws_lambda_permission" "allow_eventbridge" {
+  count         = var.schedule_expression != "" ? 1 : 0
+  statement_id  = "AllowExecutionFromEventBridge"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.function.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.schedule[0].arn
+}

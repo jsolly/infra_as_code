@@ -71,3 +71,9 @@ variable "turnstile_secret_key" {
   type        = string
   sensitive   = true
 }
+
+variable "schedule_expression" {
+  description = "Optional cron expression for EventBridge scheduled invocation (e.g., 'cron(0 12 * * ? *)')"
+  type        = string
+  default     = ""
+}
