@@ -20,12 +20,7 @@ resource "aws_lambda_function" "function" {
   architectures = ["arm64"]
 
   environment {
-    variables = merge(
-      var.environment_variables,
-      {
-        TURNSTILE_SECRET_KEY = var.turnstile_secret_key
-      }
-    )
+    variables = var.environment_variables
   }
 
   tags = local.merged_tags
