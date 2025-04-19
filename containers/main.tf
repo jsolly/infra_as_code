@@ -25,18 +25,19 @@ resource "aws_ecr_lifecycle_policy" "function" {
   repository = aws_ecr_repository.function.name
 
   policy = jsonencode({
-    rules = [{
-      rulePriority = 1
-      description  = "Keep last 10 tagged images"
-      selection = {
-        tagStatus     = "tagged"
-        tagPrefixList = ["v", "sha"]
-        countType     = "imageCountMoreThan"
-        countNumber   = 10
+    rules = [
+      {
+        rulePriority = 1
+        description  = "Keep the last 10 images"
+        selection = {
+          tagStatus   = "any"
+          countType   = "imageCountMoreThan"
+          countNumber = 10
+        }
+        action = {
+          type = "expire"
+        }
       }
-      action = {
-        type = "expire"
-      }
-    }]
+    ]
   })
 }
