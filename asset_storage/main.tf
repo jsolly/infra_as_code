@@ -25,6 +25,10 @@ resource "aws_s3_bucket_lifecycle_configuration" "storage_bucket" {
     id     = "delete_old_objects"
     status = "Enabled"
 
+    filter {
+      prefix = ""
+    }
+
     expiration {
       days = var.expiration_days
     }
