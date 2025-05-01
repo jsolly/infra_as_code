@@ -207,12 +207,50 @@ resource "aws_cloudwatch_event_rule" "schedule" {
   tags                = local.merged_tags
 }
 
+# Create IAM role for EventBridge to invoke Lambda
+resource "aws_iam_role" "eventbridge_role" {
+  count = var.schedule_expression != "" ? 1 : 0
+  name  = "${var.function_name}-${var.environment}-eventbridge-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = {
+        Service = "events.amazonaws.com"
+      }
+    }]
+  })
+
+  tags = local.merged_tags
+}
+
+# Attach policy to allow EventBridge to invoke Lambda
+resource "aws_iam_role_policy" "eventbridge_invoke_lambda" {
+  count = var.schedule_expression != "" ? 1 : 0
+  name  = "${var.function_name}-${var.environment}-invoke-lambda"
+  role  = aws_iam_role.eventbridge_role[0].id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["lambda:InvokeFunction"]
+        Resource = [aws_lambda_function.function.arn]
+      }
+    ]
+  })
+}
+
 # Set Lambda function as target for the EventBridge rule
 resource "aws_cloudwatch_event_target" "lambda_target" {
   count     = var.schedule_expression != "" ? 1 : 0
   rule      = aws_cloudwatch_event_rule.schedule[0].name
   target_id = "${var.function_name}-target"
   arn       = aws_lambda_function.function.arn
+  role_arn  = aws_iam_role.eventbridge_role[0].arn
 }
 
 # Grant EventBridge permission to invoke the Lambda function
