@@ -1,6 +1,6 @@
 locals {
-  role_name      = "${var.function_name}-${var.environment}-role"
-  s3_policy_name = "${var.function_name}-${var.environment}-s3-access"
+  role_name      = "${var.function_name}-role"
+  s3_policy_name = "${var.function_name}-s3"
   default_tags = {
     Name        = var.function_name
     Environment = var.environment
@@ -70,7 +70,7 @@ resource "aws_iam_role_policy" "s3_access" {
 
 # Create ECR access policy for Lambda to pull container images
 resource "aws_iam_role_policy" "ecr_access" {
-  name = "${var.function_name}-${var.environment}-ecr-access"
+  name = "${var.function_name}-ecr"
   role = aws_iam_role.lambda_role.id
 
   policy = jsonencode({
@@ -90,7 +90,7 @@ resource "aws_iam_role_policy" "ecr_access" {
 
 # Create HTTP API Gateway with CORS configuration
 resource "aws_apigatewayv2_api" "lambda_api" {
-  name          = "${var.function_name}-${var.environment}-api"
+  name          = "${var.function_name}-api"
   protocol_type = "HTTP"
   cors_configuration {
     allow_origins = [
@@ -201,7 +201,7 @@ resource "aws_lambda_permission" "api_gw" {
 # Create EventBridge rule for scheduled invocation if schedule expression is provided
 resource "aws_cloudwatch_event_rule" "schedule" {
   count               = var.schedule_expression != "" ? 1 : 0
-  name                = "${var.function_name}-${var.environment}-schedule"
+  name                = "${var.function_name}-schedule"
   description         = "Schedule for invoking ${var.function_name} Lambda function"
   schedule_expression = var.schedule_expression
   tags                = local.merged_tags
@@ -210,7 +210,7 @@ resource "aws_cloudwatch_event_rule" "schedule" {
 # Create IAM role for EventBridge to invoke Lambda
 resource "aws_iam_role" "eventbridge_role" {
   count = var.schedule_expression != "" ? 1 : 0
-  name  = "${var.function_name}-${var.environment}-eventbridge-role"
+  name  = "${var.function_name}-eb-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -229,7 +229,7 @@ resource "aws_iam_role" "eventbridge_role" {
 # Attach policy to allow EventBridge to invoke Lambda
 resource "aws_iam_role_policy" "eventbridge_invoke_lambda" {
   count = var.schedule_expression != "" ? 1 : 0
-  name  = "${var.function_name}-${var.environment}-invoke-lambda"
+  name  = "${var.function_name}-invoke"
   role  = aws_iam_role.eventbridge_role[0].id
 
   policy = jsonencode({
