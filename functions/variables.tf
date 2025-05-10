@@ -69,5 +69,5 @@ variable "http_method" {
 variable "schedule_expression" {
   description = "Optional cron expression for EventBridge scheduled invocation (e.g., 'cron(0 12 * * ? *)')"
   type        = string
-  default     = ""
+  default     = null
 }
