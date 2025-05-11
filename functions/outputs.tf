@@ -18,8 +18,8 @@ output "api_endpoint" {
   value       = "${aws_apigatewayv2_api.lambda_api.api_endpoint}${var.api_path}"
 }
 
-output "schedule_rule_arn" {
-  description = "The ARN of the EventBridge schedule rule (if configured)"
-  value       = var.schedule_expression != "" ? aws_cloudwatch_event_rule.schedule[0].arn : null
+output "cloudwatch_schedule_arn" {
+  description = "ARN of the CloudWatch schedule for Lambda function (if scheduled)"
+  value       = var.schedule_expression != null ? aws_cloudwatch_event_rule.schedule[0].arn : null
 }
 

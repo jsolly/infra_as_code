@@ -200,7 +200,7 @@ resource "aws_lambda_permission" "api_gw" {
 
 # Create EventBridge rule for scheduled invocation if schedule expression is provided
 resource "aws_cloudwatch_event_rule" "schedule" {
-  count               = var.schedule_expression != "" ? 1 : 0
+  count               = var.schedule_expression != null ? 1 : 0
   name                = "${var.function_name}-schedule"
   description         = "Schedule for invoking ${var.function_name} Lambda function"
   schedule_expression = var.schedule_expression
@@ -209,7 +209,7 @@ resource "aws_cloudwatch_event_rule" "schedule" {
 
 # Create IAM role for EventBridge to invoke Lambda
 resource "aws_iam_role" "eventbridge_role" {
-  count = var.schedule_expression != "" ? 1 : 0
+  count = var.schedule_expression != null ? 1 : 0
   name  = "${var.function_name}-eb-role"
 
   assume_role_policy = jsonencode({
@@ -228,7 +228,7 @@ resource "aws_iam_role" "eventbridge_role" {
 
 # Attach policy to allow EventBridge to invoke Lambda
 resource "aws_iam_role_policy" "eventbridge_invoke_lambda" {
-  count = var.schedule_expression != "" ? 1 : 0
+  count = var.schedule_expression != null ? 1 : 0
   name  = "${var.function_name}-invoke"
   role  = aws_iam_role.eventbridge_role[0].id
 
@@ -246,7 +246,7 @@ resource "aws_iam_role_policy" "eventbridge_invoke_lambda" {
 
 # Set Lambda function as target for the EventBridge rule
 resource "aws_cloudwatch_event_target" "lambda_target" {
-  count     = var.schedule_expression != "" ? 1 : 0
+  count     = var.schedule_expression != null ? 1 : 0
   rule      = aws_cloudwatch_event_rule.schedule[0].name
   target_id = "${var.function_name}-target"
   arn       = aws_lambda_function.function.arn
@@ -255,7 +255,7 @@ resource "aws_cloudwatch_event_target" "lambda_target" {
 
 # Grant EventBridge permission to invoke the Lambda function
 resource "aws_lambda_permission" "allow_eventbridge" {
-  count         = var.schedule_expression != "" ? 1 : 0
+  count         = var.schedule_expression != null ? 1 : 0
   statement_id  = "AllowExecutionFromEventBridge"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.function.function_name
